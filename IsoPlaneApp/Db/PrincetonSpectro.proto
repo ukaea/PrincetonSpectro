@@ -1,0 +1,107 @@
+InTerminator = CR LF;
+OutTerminator = CR;
+ReplyTimeout = 1000;
+ExtraInput = Ignore;
+
+getWavelength {
+    out "?NM";
+    in "%f nm  ok";
+		@init {
+			out "?NM";
+			in "%f nm  ok";
+		}
+}
+
+setWavelengthFast {
+    out "%.2f GOTO";
+    in "ok";
+}
+
+setScanRate {
+    out "%d NM/MIN";
+    in "OK";
+}
+
+getScanRate {
+    out "?NM/MIN";
+    in "NM/MIN %f";
+}
+
+setWavelengthSlow {
+    out ".2%f NM";
+    in "OK";
+}
+
+setExitSlitWidth {
+    out "SIDE-EXIT-SLIT";
+    in "OK";
+    out "%d MICRONS";
+    in "OK";
+}
+
+setEntrySlitWidth  {
+    out "SIDE-ENT-SLIT";
+    in "OK";
+    out "%d MICRONS";
+    in "OK";
+}
+
+getExitSlitWidth {
+    out "SIDE-EXIT-SLIT";
+     in "OK";
+    out "?MICRONS";
+    in "MICRONS %d";
+}
+
+getEntrySlitWidth {
+    out "SIDE-ENT-SLIT";
+    in "OK";
+    out "?MICRONS";
+    in "MICRONS %d";
+}
+
+getModel {
+    out "MODEL";
+    in "%s  ok";
+		@init {
+			out "MODEL";
+			in "%s  ok";
+		}
+}
+
+getSerial {
+    out "SERIAL";
+    in "%s  ok";
+		@init {
+			out "SERIAL";
+			in "%s  ok";
+		}
+}
+
+setTurret {
+	out "%d TURRET";
+	in "ok";
+}
+
+getTurret {
+	out "?TURRET";
+	in "%d  ok";
+	@init {
+		out "?TURRET";
+		in "%d  ok";
+	}
+}
+
+setGrating {
+	out "%d GRATING";
+	in "ok";
+}
+
+getGrating {
+	out "?GRATING";
+	in "%d  ok";
+	@init {
+		out "?GRATING";
+		in "%d  ok";
+	}
+}

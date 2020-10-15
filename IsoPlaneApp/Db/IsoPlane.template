@@ -1,0 +1,98 @@
+record(ai, "$(P)$(R)Wavelength_RBV") {
+    field (DTYP, "stream")
+    field (DESC, "Current wavelength")
+    field (EGU, "nm")
+    field (INP, "@PrincetonSpectro.proto getWavelength $(PORT)") # ?NM
+    field (PINI, "YES")
+    field (SCAN, "10 second")
+}
+
+record (ao, "$(P)$(R)Wavelength") {
+    field (DTYP, "stream")
+    field (DESC, "Set wavelength")
+    field (EGU, "nm")
+    field (OUT, "@PrincetonSpectro.proto setWavelengthFast $(PORT)") # GOTO
+    field (FLNK, "$(P)$(R)Wavelength_RBV")
+}
+
+record (ao, "$(P)$(R)ScanRate") {
+    field (DTYP, "stream")
+    field (DESC, "Set scan rate")
+    field (EGU, "nm/min")
+    field (OUT, "@PrincetonSpectro.proto setScanRate $(PORT)") # NM/MIN
+}
+
+record (ai, "$(P)$(R)ScanRate_RBV") {
+    field (DTYP, "stream")
+    field (DESC, "Get scan rate")
+    field (EGU, "nm/min")
+    field (INP, "@PrincetonSpectro.proto getScanRate $(PORT)") # ?NM/MIN
+    field (PINI, "YES")
+}
+
+record (ao, "$(P)$(R)WavelengthAtRate") {
+    field (DTYP, "stream")
+    field (DESC, "Set Wavelength")
+    field (EGU, "nm/min")
+    field (OUT, "@PrincetonSpectro.proto setWavelengthSlow $(PORT)") # NM
+}
+
+record (ao, "$(P)$(R)ExitSlitWidth") {
+    field (DTYP, "stream")
+    field (DESC, "Set exit slit widt")
+    field (OUT, "@PrincetonSpectro.proto setExitSlitWidth $(PORT)") # SIDE_EXIT-SLIT + MICRONS
+}
+
+record (ao, "$(P)$(R)EntrySlitWidth") {
+    field (DTYP, "stream")
+    field (DESC, "Set entry slit width")
+    field (OUT, "@PrincetonSpectro.proto setEntrySlitWidth $(PORT)") # SIDE_ENT-SLIT + MICRONS
+}
+
+record (ai, "$(P)$(R)ExitSlitWidth_RBV") {
+    field (DTYP, "stream")
+    field (DESC, "Get exit slit widt")
+    field (INP, "@PrincetonSpectro.proto getExitSlitWidth $(PORT)") # SIDE_EXIT-SLIT + ?MICRONS
+}
+
+record (ai, "$(P)$(R)EntrySlitWidth_RBV") {
+    field (DTYP, "stream")
+    field (DESC, "Set entry slit width")
+    field (INP, "@PrincetonSpectro.proto getEntrySlitWidth $(PORT)") # SIDE_ENT-SLIT + ?MICRONS
+}
+
+record (stringin, "$(P)$(R)Model_RBV") {
+    field (DTYP, "stream")
+    field (DESC, "Type of Spectrometer")
+    field (INP, "@PrincetonSpectro.proto getModel $(PORT)") # MODEL
+    field (PINI, "YES")
+    field (SCAN, "10 second")
+}
+
+record (stringin, "$(P)$(R)SERIAL_RBV") {
+    field (DTYP, "stream")
+    field (DESC, "Serial number of Spectrometer")
+    field (INP, "@PrincetonSpectro.proto getSerial $(PORT)") # SERIAL
+    field (PINI, "YES")
+}
+
+record (ao, "$(P)$(R)Grating") {
+	field (DTYP, "stream")
+	field (DESC, "Set the used grating number of Spectrometer")
+	field (OUT, "@PrincetonSpectro.proto setGrating $(PORT)") # GRATING
+
+}
+
+record (ai, "$(P)$(R)Grating_RBV") {
+	field (DTYP, "stream")
+	field (DESC, "Get the used grating number of Spectrometer")
+	field (INP, "@PrincetonSpectro.proto getGrating $(PORT)") # GRATING
+	field (PINI, "YES")
+}
+
+record (ai, "$(P)$(R)Turret_RBV") {
+	field (DTYP, "stream")
+	field (DESC, "Get the used grating number of Spectrometer")
+	field (INP, "@PrincetonSpectro.proto getTurret $(PORT)") # GRATING
+	field (PINI, "YES")
+}

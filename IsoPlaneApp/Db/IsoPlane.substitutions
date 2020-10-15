@@ -1,0 +1,5 @@
+file "db/IsoPlane.template"
+{
+    pattern{P, R, PORT}
+    {"WIZZLERHD:HZDR:", "IsoPlane:", "IsoPlane"}
+}
