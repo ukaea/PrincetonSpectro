@@ -14,50 +14,50 @@ getWavelength {
 
 setWavelengthFast {
     out "%.2f GOTO";
-    in "ok";
+    in "  ok";
 }
 
 setScanRate {
     out "%d NM/MIN";
-    in "OK";
+    in "  ok";
 }
 
 getScanRate {
     out "?NM/MIN";
-    in "NM/MIN %f";
+	in "%f nm/min  ok";
 }
 
 setWavelengthSlow {
     out ".2%f NM";
-    in "OK";
+    in "  ok";
 }
 
 setExitSlitWidth {
     out "SIDE-EXIT-SLIT";
-    in "OK";
+    in "  ok";
     out "%d MICRONS";
-    in "OK";
+    in "  ok";
 }
 
 setEntrySlitWidth  {
     out "SIDE-ENT-SLIT";
-    in "OK";
+    in "  ok";
     out "%d MICRONS";
-    in "OK";
+    in "  ok";
 }
 
 getExitSlitWidth {
     out "SIDE-EXIT-SLIT";
-     in "OK";
+     in "ok";
     out "?MICRONS";
-    in "MICRONS %d";
+    in "%d um  ok";
 }
 
 getEntrySlitWidth {
     out "SIDE-ENT-SLIT";
-    in "OK";
+    in "  ok";
     out "?MICRONS";
-    in "MICRONS %d";
+    in "%d um  ok";
 }
 
 getModel {
@@ -80,7 +80,7 @@ getSerial {
 
 setTurret {
 	out "%d TURRET";
-	in "ok";
+	in "  ok";
 }
 
 getTurret {
@@ -94,7 +94,7 @@ getTurret {
 
 setGrating {
 	out "%d GRATING";
-	in "ok";
+	in "  ok";
 }
 
 getGrating {

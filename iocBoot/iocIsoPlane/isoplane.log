@@ -1,141 +1,104 @@
-
-C:\epics\iocTops\PrincetonSpectro\iocBoot\iocIsoPlane>..\..\bin\win32-x86-static\IsoPlane.exe st.cmd 
-2020/10/15 17:22:04.024 DEVICEPORT -1 autoConnect could not connect: \\.\COM3 Can't open  No error
-Can't set "WIZZLERHD:HZDR:IsoPlane:Grating.DESC" to "Set the used grating number of Spectrometer" Error (512,512)
-Error at or before ")" in file "db/IsoPlane.template" line 81
-Can't set "WIZZLERHD:HZDR:IsoPlane:Grating_RBV.DESC" to "Get the used grating number of Spectrometer" Error (512,512)
-ErrorCan't set "WIZZLERHD:HZDR:IsoPlane:Turret_RBV.DESC" to "Get the used grating number of Spectrometer" Error (512,512)
-ErrorStarting iocInit
-[31;1m2020/10/15 17:22:04.565903 win4b80 Businterface 'IsoPlane' not found for 'WIZZLERHD:HZDR:IsoPlane:Wavelength'
-[0m[31;1m2020/10/15 17:22:04.568478 win4b80 WIZZLERHD:HZDR:IsoPlane:Wavelength: Can't attach to bus IsoPlane -1
-[0m[31;1m2020/10/15 17:22:04.570869 win4b80 WIZZLERHD:HZDR:IsoPlane:Wavelength: Record initialization failed
-[0mError (514,514) PV: WIZZLERHD:HZDR:IsoPlane:Wavelength ao: init_record
-
-[31;1m2020/10/15 17:22:04.575405 win4b80 Businterface 'IsoPlane' not found for 'WIZZLERHD:HZDR:IsoPlane:ScanRate'
-[0m[31;1m2020/10/15 17:22:04.577978 win4b80 WIZZLERHD:HZDR:IsoPlane:ScanRate: Can't attach to bus IsoPlane -1
-[0m[31;1m2020/10/15 17:22:04.580366 win4b80 WIZZLERHD:HZDR:IsoPlane:ScanRate: Record initialization failed
-[0mError (514,514) PV: WIZZLERHD:HZDR:IsoPlane:ScanRate ao: init_record
-
-[31;1m2020/10/15 17:22:04.584153 win4b80 Businterface 'IsoPlane' not found for 'WIZZLERHD:HZDR:IsoPlane:WavelengthAtRate'
-[0m[31;1m2020/10/15 17:22:04.586810 win4b80 WIZZLERHD:HZDR:IsoPlane:WavelengthAtRate: Can't attach to bus IsoPlane -1
-[0m[31;1m2020/10/15 17:22:04.588910 win4b80 WIZZLERHD:HZDR:IsoPlane:WavelengthAtRate: Record initialization failed
-[0mError (514,514) PV: WIZZLERHD:HZDR:IsoPlane:WavelengthAtRate ao: init_record
-
-[31;1m2020/10/15 17:22:04.591918 win4b80 Businterface 'IsoPlane' not found for 'WIZZLERHD:HZDR:IsoPlane:ExitSlitWidth'
-[0m[31;1m2020/10/15 17:22:04.593594 win4b80 WIZZLERHD:HZDR:IsoPlane:ExitSlitWidth: Can't attach to bus IsoPlane -1
-[0m[31;1m2020/10/15 17:22:04.594946 win4b80 WIZZLERHD:HZDR:IsoPlane:ExitSlitWidth: Record initialization failed
-[0mError (514,514) PV: WIZZLERHD:HZDR:IsoPlane:ExitSlitWidth ao: init_record
-
-[31;1m2020/10/15 17:22:04.597200 win4b80 Businterface 'IsoPlane' not found for 'WIZZLERHD:HZDR:IsoPlane:EntrySlitWidth'
-[0m[31;1m2020/10/15 17:22:04.598633 win4b80 WIZZLERHD:HZDR:IsoPlane:EntrySlitWidth: Can't attach to bus IsoPlane -1
-[0m[31;1m2020/10/15 17:22:04.599979 win4b80 WIZZLERHD:HZDR:IsoPlane:EntrySlitWidth: Record initialization failed
-[0mError (514,514) PV: WIZZLERHD:HZDR:IsoPlane:EntrySlitWidth ao: init_record
-
-[31;1m2020/10/15 17:22:04.602227 win4b80 Businterface 'IsoPlane' not found for 'WIZZLERHD:HZDR:IsoPlane:Grating'
-[0m[31;1m2020/10/15 17:22:04.603592 win4b80 WIZZLERHD:HZDR:IsoPlane:Grating: Can't attach to bus IsoPlane -1
-[0m[31;1m2020/10/15 17:22:04.604850 win4b80 WIZZLERHD:HZDR:IsoPlane:Grating: Record initialization failed
-[0mError (514,514) PV: WIZZLERHD:HZDR:IsoPlane:Grating ao: init_record
-
-[31;1m2020/10/15 17:22:04.606903 win4b80 Businterface 'IsoPlane' not found for 'WIZZLERHD:HZDR:IsoPlane:Wavelength_RBV'
-[0m[31;1m2020/10/15 17:22:04.608352 win4b80 WIZZLERHD:HZDR:IsoPlane:Wavelength_RBV: Can't attach to bus IsoPlane -1
-[0m[31;1m2020/10/15 17:22:04.609689 win4b80 WIZZLERHD:HZDR:IsoPlane:Wavelength_RBV: Record initialization failed
-[0m[31;1m2020/10/15 17:22:04.611046 win4b80 Businterface 'IsoPlane' not found for 'WIZZLERHD:HZDR:IsoPlane:ScanRate_RBV'
-[0m[31;1m2020/10/15 17:22:04.612694 win4b80 WIZZLERHD:HZDR:IsoPlane:ScanRate_RBV: Can't attach to bus IsoPlane -1
-[0m[31;1m2020/10/15 17:22:04.614043 win4b80 WIZZLERHD:HZDR:IsoPlane:ScanRate_RBV: Record initialization failed
-[0m[31;1m2020/10/15 17:22:04.615373 win4b80 Businterface 'IsoPlane' not found for 'WIZZLERHD:HZDR:IsoPlane:ExitSlitWidth_RBV'
-[0m[31;1m2020/10/15 17:22:04.616831 win4b80 WIZZLERHD:HZDR:IsoPlane:ExitSlitWidth_RBV: Can't attach to bus IsoPlane -1
-[0m[31;1m2020/10/15 17:22:04.618307 win4b80 WIZZLERHD:HZDR:IsoPlane:ExitSlitWidth_RBV: Record initialization failed
-[0m[31;1m2020/10/15 17:22:04.619673 win4b80 Businterface 'IsoPlane' not found for 'WIZZLERHD:HZDR:IsoPlane:EntrySlitWidth_RBV'
-[0m[31;1m2020/10/15 17:22:04.621433 win4b80 WIZZLERHD:HZDR:IsoPlane:EntrySlitWidth_RBV: Can't attach to bus IsoPlane -1
-[0m[31;1m2020/10/15 17:22:04.623133 win4b80 WIZZLERHD:HZDR:IsoPlane:EntrySlitWidth_RBV: Record initialization failed
-[0m[31;1m2020/10/15 17:22:04.624522 win4b80 Businterface 'IsoPlane' not found for 'WIZZLERHD:HZDR:IsoPlane:Grating_RBV'
-[0m[31;1m2020/10/15 17:22:04.625917 win4b80 WIZZLERHD:HZDR:IsoPlane:Grating_RBV: Can't attach to bus IsoPlane -1
-[0m[31;1m2020/10/15 17:22:04.627314 win4b80 WIZZLERHD:HZDR:IsoPlane:Grating_RBV: Record initialization failed
-[0m[31;1m2020/10/15 17:22:04.628615 win4b80 Businterface 'IsoPlane' not found for 'WIZZLERHD:HZDR:IsoPlane:Turret_RBV'
-[0m[31;1m2020/10/15 17:22:04.630127 win4b80 WIZZLERHD:HZDR:IsoPlane:Turret_RBV: Can't attach to bus IsoPlane -1
-[0m[31;1m2020/10/15 17:22:04.631436 win4b80 WIZZLERHD:HZDR:IsoPlane:Turret_RBV: Record initialization failed
-[0m[31;1m2020/10/15 17:22:04.632755 win4b80 Businterface 'IsoPlane' not found for 'WIZZLERHD:HZDR:IsoPlane:Model_RBV'
-[0m[31;1m2020/10/15 17:22:04.634197 win4b80 WIZZLERHD:HZDR:IsoPlane:Model_RBV: Can't attach to bus IsoPlane -1
-[0m[31;1m2020/10/15 17:22:04.636749 win4b80 WIZZLERHD:HZDR:IsoPlane:Model_RBV: Record initialization failed
-[0m[31;1m2020/10/15 17:22:04.638114 win4b80 Businterface 'IsoPlane' not found for 'WIZZLERHD:HZDR:IsoPlane:SERIAL_RBV'
-[0m[31;1m2020/10/15 17:22:04.639490 win4b80 WIZZLERHD:HZDR:IsoPlane:SERIAL_RBV: Can't attach to bus IsoPlane -1
-[0m[31;1m2020/10/15 17:22:04.640804 win4b80 WIZZLERHD:HZDR:IsoPlane:SERIAL_RBV: Record initialization failed
-[0m[31;1m2020/10/15 17:22:05.146338 win4b80 WIZZLERHD:HZDR:IsoPlane:Wavelength_RBV: Record not initialised correctly
-[0m[31;1m2020/10/15 17:22:05.150590 win4b80 WIZZLERHD:HZDR:IsoPlane:ScanRate_RBV: Record not initialised correctly
-[0m[31;1m2020/10/15 17:22:05.153732 win4b80 WIZZLERHD:HZDR:IsoPlane:Grating_RBV: Record not initialised correctly
-[0m[31;1m2020/10/15 17:22:05.156987 win4b80 WIZZLERHD:HZDR:IsoPlane:Turret_RBV: Record not initialised correctly
-[0m[31;1m2020/10/15 17:22:05.159442 win4b80 WIZZLERHD:HZDR:IsoPlane:Model_RBV: Record not initialised correctly
-[0m[31;1m2020/10/15 17:22:05.161002 win4b80 WIZZLERHD:HZDR:IsoPlane:SERIAL_RBV: Record not initialised correctly
-[0miocRun: All initialization complete
+Starting iocInit
+iocRun: All initialization complete
 #IsoPlane Start-Up Script
 ## Set environment variables
 < envPaths
 epicsEnvSet("IOC","iocIsoPlane")
-epicsEnvSet("TOP","C:/epics/iocTops/PrincetonSpectro")
+epicsEnvSet("TOP","C:/EPICS/iocTops/PrincetonSpectro")
 epicsEnvSet("ASYN","\\epics/support/asyn")
 epicsEnvSet("STREAM","\\epics/support/stream")
 epicsEnvSet("EPICS_BASE","\\epics/base")
-epicsEnvSet "STREAM_PROTOCOL_PATH" "C:/epics/iocTops/PrincetonSpectro/db"
+epicsEnvSet "STREAM_PROTOCOL_PATH" "C:/EPICS/iocTops/PrincetonSpectro/db"
 ## Change to IOC application's <top> directory
-cd "C:/epics/iocTops/PrincetonSpectro"
+cd "C:/EPICS/iocTops/PrincetonSpectro"
 ## Register all support components
 dbLoadDatabase "dbd/IsoPlane.dbd"
 IsoPlane_registerRecordDeviceDriver pdbbase
 ##Configure communications
-drvAsynSerialPortConfigure("DEVICEPORT","COM3")
-asynSetOption("DEVICEPORT", 0, "baud", "115200")
-setOption failed \\.\COM3 disconnected:
-asynSetOption("DEVICEPORT", 0, "bits", "8")
-setOption failed \\.\COM3 disconnected:
-asynSetOption("DEVICEPORT", 0, "parity", "none")
-setOption failed \\.\COM3 disconnected:
-asynSetOption("DEVICEPORT", 0, "stop", "1")
-setOption failed \\.\COM3 disconnected:
-asynSetOption("DEVICEPORT", 0, "clocal", "Y")
-setOption failed \\.\COM3 disconnected:
-asynSetOption("DEVICEPORT", 0, "crtscts", "N")
-setOption failed \\.\COM3 disconnected:
+drvAsynSerialPortConfigure("IsoPlane","COM3")
+asynSetOption("IsoPlane", 0, "baud", "115200")
+asynSetOption("IsoPlane", 0, "bits", "8")
+asynSetOption("IsoPlane", 0, "parity", "none")
+asynSetOption("IsoPlane", 0, "stop", "1")
+asynSetOption("IsoPlane", 0, "clocal", "Y")
+asynSetOption("IsoPlane", 0, "crtscts", "N")
 ## Load record instances
 dbLoadTemplate("db/IsoPlane.substitutions")
 ## Initialise IOC instance
-cd "C:/epics/iocTops/PrincetonSpectro/iocBoot/iocIsoPlane"
+cd "C:/EPICS/iocTops/PrincetonSpectro/iocBoot/iocIsoPlane"
+dbDumpRecord
+record(ao,"MAST:HZDR:IsoPlane:Wavelength") {
+	field(DESC,"Set wavelength")
+	field(DTYP,"stream")
+	field(EGU,"nm")
+}
+record(ao,"MAST:HZDR:IsoPlane:ScanRate") {
+	field(DESC,"Set scan rate")
+	field(DTYP,"stream")
+	field(EGU,"nm/min")
+}
+record(ao,"MAST:HZDR:IsoPlane:WavelengthAtRate") {
+	field(DESC,"Set Wavelength")
+	field(DTYP,"stream")
+	field(EGU,"nm/min")
+}
+record(ao,"MAST:HZDR:IsoPlane:ExitSlitWidth") {
+	field(DESC,"Set exit slit widt")
+	field(DTYP,"stream")
+}
+record(ao,"MAST:HZDR:IsoPlane:EntrySlitWidth") {
+	field(DESC,"Set entry slit width")
+	field(DTYP,"stream")
+}
+record(ao,"MAST:HZDR:IsoPlane:Grating") {
+	field(DESC,"Set grating of Spectrometer")
+	field(DTYP,"stream")
+}
+record(ai,"MAST:HZDR:IsoPlane:Wavelength_RBV") {
+	field(DESC,"Current wavelength")
+	field(SCAN,"10 second")
+	field(PINI,"YES")
+	field(DTYP,"stream")
+	field(EGU,"nm")
+}
+record(ai,"MAST:HZDR:IsoPlane:ScanRate_RBV") {
+	field(DESC,"Get scan rate")
+	field(PINI,"YES")
+	field(DTYP,"stream")
+	field(EGU,"nm/min")
+}
+record(ai,"MAST:HZDR:IsoPlane:ExitSlitWidth_RBV") {
+	field(DESC,"Get exit slit width")
+	field(DTYP,"stream")
+}
+record(ai,"MAST:HZDR:IsoPlane:EntrySlitWidth_RBV") {
+	field(DESC,"Get entry slit width")
+	field(PINI,"YES")
+	field(DTYP,"stream")
+}
+record(ai,"MAST:HZDR:IsoPlane:Grating_RBV") {
+	field(DESC,"Get grating of Spectrometer")
+	field(PINI,"YES")
+	field(DTYP,"stream")
+}
+record(ai,"MAST:HZDR:IsoPlane:Turret_RBV") {
+	field(DESC,"Get turret number of Spectrometer")
+	field(PINI,"YES")
+	field(DTYP,"stream")
+}
+record(stringin,"MAST:HZDR:IsoPlane:Model_RBV") {
+	field(DESC,"Type of Spectrometer")
+	field(PINI,"YES")
+	field(DTYP,"stream")
+}
+record(stringin,"MAST:HZDR:IsoPlane:SERIAL_RBV") {
+	field(DESC,"Serial number of Spectrometer")
+	field(PINI,"YES")
+	field(DTYP,"stream")
+}
 iocInit
 ############################################################################
 ## EPICS R7.0.3.1
-## EPICS Base built Sep 14 2020
+## EPICS Base built Sep 10 2020
 ############################################################################
-epics> [31;1m2020/10/15 17:22:14.646670 scan-10 WIZZLERHD:HZDR:IsoPlane:Wavelength_RBV: Record not initialised correctly
-[0m[31;1m2020/10/15 17:22:14.653191 scan-10 WIZZLERHD:HZDR:IsoPlane:Model_RBV: Record not initialised correctly
-[0m[31;1m2020/10/15 17:22:24.645294 scan-10 WIZZLERHD:HZDR:IsoPlane:Wavelength_RBV: Record not initialised correctly
-[0m[31;1m2020/10/15 17:22:24.646773 scan-10 WIZZLERHD:HZDR:IsoPlane:Model_RBV: Record not initialised correctly
-[0m[31;1m2020/10/15 17:22:34.648307 scan-10 WIZZLERHD:HZDR:IsoPlane:Wavelength_RBV: Record not initialised correctly
-[0m[31;1m2020/10/15 17:22:34.649815 scan-10 WIZZLERHD:HZDR:IsoPlane:Model_RBV: Record not initialised correctly
-[0m[31;1m2020/10/15 17:22:44.650442 scan-10 WIZZLERHD:HZDR:IsoPlane:Wavelength_RBV: Record not initialised correctly
-[0m[31;1m2020/10/15 17:22:44.657886 scan-10 WIZZLERHD:HZDR:IsoPlane:Model_RBV: Record not initialised correctly
-[0m[31;1m2020/10/15 17:22:54.650033 scan-10 WIZZLERHD:HZDR:IsoPlane:Wavelength_RBV: Record not initialised correctly
-[0m[31;1m2020/10/15 17:22:54.653606 scan-10 WIZZLERHD:HZDR:IsoPlane:Model_RBV: Record not initialised correctly
-[0m[31;1m2020/10/15 17:23:04.642624 scan-10 WIZZLERHD:HZDR:IsoPlane:Wavelength_RBV: Record not initialised correctly
-[0m[31;1m2020/10/15 17:23:04.652539 scan-10 WIZZLERHD:HZDR:IsoPlane:Model_RBV: Record not initialised correctly
-[0m[31;1m2020/10/15 17:23:14.642804 scan-10 WIZZLERHD:HZDR:IsoPlane:Wavelength_RBV: Record not initialised correctly
-[0m[31;1m2020/10/15 17:23:14.648959 scan-10 WIZZLERHD:HZDR:IsoPlane:Model_RBV: Record not initialised correctly
-[0m[31;1m2020/10/15 17:23:24.654649 scan-10 WIZZLERHD:HZDR:IsoPlane:Wavelength_RBV: Record not initialised correctly
-[0m[31;1m2020/10/15 17:23:24.660238 scan-10 WIZZLERHD:HZDR:IsoPlane:Model_RBV: Record not initialised correctly
-[0m[31;1m2020/10/15 17:23:34.650611 scan-10 WIZZLERHD:HZDR:IsoPlane:Wavelength_RBV: Record not initialised correctly
-[0m[31;1m2020/10/15 17:23:34.652338 scan-10 WIZZLERHD:HZDR:IsoPlane:Model_RBV: Record not initialised correctly
-[0m[31;1m2020/10/15 17:23:44.654047 scan-10 WIZZLERHD:HZDR:IsoPlane:Wavelength_RBV: Record not initialised correctly
-[0m[31;1m2020/10/15 17:23:44.655541 scan-10 WIZZLERHD:HZDR:IsoPlane:Model_RBV: Record not initialised correctly
-[0m[31;1m2020/10/15 17:23:54.642606 scan-10 WIZZLERHD:HZDR:IsoPlane:Wavelength_RBV: Record not initialised correctly
-[0m[31;1m2020/10/15 17:23:54.649841 scan-10 WIZZLERHD:HZDR:IsoPlane:Model_RBV: Record not initialised correctly
-[0m[31;1m2020/10/15 17:24:04.639686 scan-10 WIZZLERHD:HZDR:IsoPlane:Wavelength_RBV: Record not initialised correctly
-[0m[31;1m2020/10/15 17:24:04.646011 scan-10 WIZZLERHD:HZDR:IsoPlane:Model_RBV: Record not initialised correctly
-[0m[31;1m2020/10/15 17:24:14.650781 scan-10 WIZZLERHD:HZDR:IsoPlane:Wavelength_RBV: Record not initialised correctly
-[0m[31;1m2020/10/15 17:24:14.654268 scan-10 WIZZLERHD:HZDR:IsoPlane:Model_RBV: Record not initialised correctly
-[0m[31;1m2020/10/15 17:24:24.643763 scan-10 WIZZLERHD:HZDR:IsoPlane:Wavelength_RBV: Record not initialised correctly
-[0m[31;1m2020/10/15 17:24:24.646920 scan-10 WIZZLERHD:HZDR:IsoPlane:Model_RBV: Record not initialised correctly
-[0m[31;1m2020/10/15 17:24:34.649511 scan-10 WIZZLERHD:HZDR:IsoPlane:Wavelength_RBV: Record not initialised correctly
-[0m[31;1m2020/10/15 17:24:34.655115 scan-10 WIZZLERHD:HZDR:IsoPlane:Model_RBV: Record not initialised correctly
-[0m[31;1m2020/10/15 17:24:44.646834 scan-10 WIZZLERHD:HZDR:IsoPlane:Wavelength_RBV: Record not initialised correctly
-[0m[31;1m2020/10/15 17:24:44.650154 scan-10 WIZZLERHD:HZDR:IsoPlane:Model_RBV: Record not initialised correctly
-[0mCA cast server: Unable to fetch N characters pending
-CAS: Client accept error: WINSOCK Error 10004 (16)
-CAS: UDP recv error: WINSOCK Error 10093
+epics> 

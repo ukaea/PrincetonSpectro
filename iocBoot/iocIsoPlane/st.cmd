@@ -12,17 +12,18 @@ dbLoadDatabase "dbd/IsoPlane.dbd"
 IsoPlane_registerRecordDeviceDriver pdbbase
 
 ##Configure communications
-drvAsynSerialPortConfigure("DEVICEPORT","COM3")
-asynSetOption("DEVICEPORT", 0, "baud", "115200")
-asynSetOption("DEVICEPORT", 0, "bits", "8")
-asynSetOption("DEVICEPORT", 0, "parity", "none")
-asynSetOption("DEVICEPORT", 0, "stop", "1")
-asynSetOption("DEVICEPORT", 0, "clocal", "Y")
-asynSetOption("DEVICEPORT", 0, "crtscts", "N")
+drvAsynSerialPortConfigure("IsoPlane","COM3")
+asynSetOption("IsoPlane", 0, "baud", "115200")
+asynSetOption("IsoPlane", 0, "bits", "8")
+asynSetOption("IsoPlane", 0, "parity", "none")
+asynSetOption("IsoPlane", 0, "stop", "1")
+asynSetOption("IsoPlane", 0, "clocal", "Y")
+asynSetOption("IsoPlane", 0, "crtscts", "N")
 
 ## Load record instances
 dbLoadTemplate("db/IsoPlane.substitutions")
 
 ## Initialise IOC instance
 cd "${TOP}/iocBoot/${IOC}"
+dbDumpRecord
 iocInit
