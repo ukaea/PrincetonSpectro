@@ -6,10 +6,10 @@ ExtraInput = Ignore;
 getWavelength {
     out "?NM";
     in "%f nm  ok";
-		@init {
-			out "?NM";
-			in "%f nm  ok";
-		}
+        @init {
+            out "?NM";
+            in "%f nm  ok";
+        }
 }
 
 setWavelengthFast {
@@ -24,7 +24,7 @@ setScanRate {
 
 getScanRate {
     out "?NM/MIN";
-	in "%f nm/min  ok";
+    in "%f nm/min  ok";
 }
 
 setWavelengthSlow {
@@ -63,45 +63,45 @@ getEntrySlitWidth {
 getModel {
     out "MODEL";
     in "%s  ok";
-		@init {
-			out "MODEL";
-			in "%s  ok";
-		}
+        @init {
+            out "MODEL";
+            in "%s  ok";
+        }
 }
 
 getSerial {
     out "SERIAL";
     in "%s  ok";
-		@init {
-			out "SERIAL";
-			in "%s  ok";
-		}
+        @init {
+            out "SERIAL";
+            in "%s  ok";
+        }
 }
 
 setTurret {
-	out "%d TURRET";
-	in "  ok";
+    out "%d TURRET";
+    in "  ok";
 }
 
 getTurret {
-	out "?TURRET";
-	in "%d  ok";
-	@init {
-		out "?TURRET";
-		in "%d  ok";
-	}
+    out "?TURRET";
+    in "%d  ok";
+    @init {
+        out "?TURRET";
+        in "%d  ok";
+    }
 }
 
 setGrating {
-	out "%d GRATING";
-	in "  ok";
+    out "%d GRATING";
+    in "  ok";
 }
 
 getGrating {
-	out "?GRATING";
-	in "%d  ok";
-	@init {
-		out "?GRATING";
-		in "%d  ok";
-	}
+    out "?GRATING";
+    in "%d  ok";
+    @init {
+        out "?GRATING";
+        in "%d  ok";
+    }
 }
