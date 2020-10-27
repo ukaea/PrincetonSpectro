@@ -1,0 +1,63 @@
+record (ao, "$(P)$(R)Wavelength") {
+    field (DESC, "Set wavelength")
+    field (EGU, "nm")
+	field (OUT,  "@asyn($(PORT),$(ADDR),1)WAVELENGTH")
+    info  ("asyn:READBACK", "1")
+}
+
+record (ao, "$(P)$(R)ScanRate") {
+    field (DESC, "Scan rate")
+    field (EGU, "nm/min")
+	field (OUT,  "@asyn($(PORT),$(ADDR),1)SCANRATE")
+    info  ("asyn:READBACK", "1")
+}
+
+record (ao, "$(P)$(R)ExitSlitWidth") {
+    field (DESC, "Exit slit width")
+	field (OUT,  "@asyn($(PORT),$(ADDR),1)EXITSLITWIDTH")
+    info  ("asyn:READBACK", "1")
+}
+
+record (ao, "$(P)$(R)EntrySlitWidth") {
+    field (DESC, "Entry slit width")
+	field (OUT,  "@asyn($(PORT),$(ADDR),1)ENTRYSLITWIDTH")
+    info("asyn:READBACK", "1")
+}
+
+record (stringin, "$(P)$(R)Model") {
+    field (DESC, "Type of Spectrometer")
+	field (INP,  "@asyn($(PORT),$(ADDR),1)MODEL")
+    field (PINI, "YES")
+}
+
+record (stringin, "$(P)$(R)Serial") {
+    field (DESC, "Serial number of Spectrometer")
+	field (INP,  "@asyn($(PORT),$(ADDR),1)SERIAL")
+    field (PINI, "YES")
+}
+
+record (mbbo, "$(P)$(R)Grating") {
+    field (DTYP, "stream")
+    field (DESC, "Grating of Spectrometer")
+	field (OUT,  "@asyn($(PORT),$(ADDR),1)GRATING")
+    info("asyn:READBACK", "1")
+}
+
+record (longin, "$(P)$(R)Turret") {
+    field (DESC, "Turret number of Spectrometer")
+	field (IN,  "@asyn($(PORT),$(ADDR),1)TURRET")
+}
+
+record (mbbo, "$(P)$(R)Mirror") {
+    field (DTYP, "stream")
+    field (DESC, "Mirror of Spectrometer")
+	field (OUT,  "@asyn($(PORT),$(ADDR),1)MIRROR")
+    info("asyn:READBACK", "1")
+}
+
+record (bi, "$(P)$(R)Moving") {
+    field (DTYP, "stream")
+    field (DESC, "Specttometer is moving")
+	field (OUT,  "@asyn($(PORT),$(ADDR),1)MOVING")
+    field (SCAN, "I/O Intr")
+}

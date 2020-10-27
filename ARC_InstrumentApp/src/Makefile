@@ -8,37 +8,37 @@ include $(TOP)/configure/CONFIG
 #=============================
 # Build the IOC application
 
-LIBRARY_IOC = IsoPlaneDev
-PROD_IOC = IsoPlaneApp
+LIBRARY_IOC = ARCInstrumentDev
+PROD_IOC = ARCInstrumentApp
 
 # IsoPlaneDev.dbd will be created and installed
-DBD += IsoPlane.dbd
+DBD += ARCInstrument.dbd
 
 # IsoPlaneDev.dbd will be made up from these files:
-IsoPlane_DBD += base.dbd
+ARCInstrument_DBD += base.dbd
 
 # Include dbd files from all support applications:
-IsoPlane_DBD += asyn.dbd
-IsoPlane_DBD += drvAsynSerialPort.dbd
-IsoPlane_DBD += $(STREAM)/dbd/stream.dbd
+ARCInstrument_DBD += asyn.dbd
+ARCInstrument_DBD += drvAsynSerialPort.dbd
 
 # Add all the support libraries needed by this IOC
-# IsoPlaneDev_LIBS += stream asyn
-IsoPlaneApp_LIBS += stream asyn
+ARCInstrumentDev_LIBS += asyn
+ARCInstrumentApp_LIBS += asyn
 
 # IsoPlane_registerRecordDeviceDriver.cpp derives from IsoPlaneDev.dbd
-IsoPlaneApp_SRCS += IsoPlane_registerRecordDeviceDriver.cpp
+IsoPlaneDev_SRCS += ARC_USB.cpp
+IsoPlaneDev_SRCS += ARCInstrument_registerRecordDeviceDriver.cpp
 
 # Build the main IOC entry point on workstation OSs.
-IsoPlaneApp_SRCS_DEFAULT += IsoPlaneMain.cpp
-IsoPlaneApp_SRCS_vxWorks += -nil-
+ARCInstrumentApp_SRCS_DEFAULT += ARCInstrumentMain.cpp
+ARCInstrumentApp_SRCS_vxWorks += -nil-
 
 # Add support from base/src/vxWorks if needed
 #IsoPlane_OBJS_vxWorks += $(EPICS_BASE_BIN)/vxComLibrary
 
 # Finally link to the EPICS Base libraries
-IsoPlaneDev_LIBS += $(EPICS_BASE_IOC_LIBS)
-IsoPlaneApp_LIBS += $(EPICS_BASE_IOC_LIBS)
+ARCInstrumentDev_LIBS += $(EPICS_BASE_IOC_LIBS)
+ARCInstrumentApp_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 #===========================
 

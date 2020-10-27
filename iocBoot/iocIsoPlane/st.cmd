@@ -8,7 +8,7 @@ epicsEnvSet "STREAM_PROTOCOL_PATH" "$(TOP)/db"
 cd "${TOP}"
 
 ## Register all support components
-dbLoadDatabase "dbd/IsoPlane.dbd"
+dbLoadDatabase "dbd/IsoPlaneDev.dbd"
 IsoPlane_registerRecordDeviceDriver pdbbase
 
 ##Configure communications
