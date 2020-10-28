@@ -19,6 +19,9 @@
     <Filter Include="Db">
       <UniqueIdentifier>{656f331f-75f4-4954-9d4e-d69adf8d3ac1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="O.Common">
+      <UniqueIdentifier>{31e326fd-9f3d-4157-92d4-6eace28c0ea4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ARC_USB.cpp">
@@ -47,6 +50,12 @@
     </None>
     <None Include="..\Db\ARC_Instrument.template">
       <Filter>Db</Filter>
+    </None>
+    <None Include="O.Common\ARC_Instrument.dbd">
+      <Filter>O.Common</Filter>
+    </None>
+    <None Include="ARC_InstrumentInclude.dbd">
+      <Filter>Source Files</Filter>
     </None>
   </ItemGroup>
 </Project>

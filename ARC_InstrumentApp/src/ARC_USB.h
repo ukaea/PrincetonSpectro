@@ -65,6 +65,9 @@ namespace Motors {
 		bool m_isMoving;
 	public:
 		bool isConnected() const;
+		static void ARC_InstrumentPortDriverConfigure(const iocshArgBuf *args);
+		static void ARC_InstrumentExitFunc(void * param);
+
 		bool connect(asynUser* pasynUser, unsigned long timeOut = DefaultTimeout);
 		std::string disConnect(asynUser* pasynUser);
 		double startMovement(asynUser* pasynUser, double position);
@@ -90,8 +93,12 @@ namespace Motors {
 #endif
 		virtual asynStatus readOctet(asynUser *pasynUser, char *value, size_t maxChars,
 			size_t *nActual, int *eomReason);
+		virtual asynStatus readInt32(asynUser *pasynUser, epicsInt32 *value);
+		virtual asynStatus writeInt32(asynUser *pasynUser, epicsInt32 value);
 		virtual asynStatus readFloat64(asynUser *pasynUser, epicsFloat64 *value);
 		virtual asynStatus writeFloat64(asynUser *pasynUser, epicsFloat64 value);
+		virtual asynStatus readEnum(asynUser *pasynUser, char *strings[], int values[], int severities[],
+			size_t nElements, size_t *nIn);
 
 		std::string ARC_get_Mono_Model(asynUser* pasynUser) const;
 		long ARC_get_Mono_Serial_int32(asynUser* pasynUser) const;

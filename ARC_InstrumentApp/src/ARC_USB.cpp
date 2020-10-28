@@ -19,9 +19,12 @@
 #include "..\Acton\ARC_Instrument_dll.h"
 #endif
 
+#include <iocsh.h>
+#include <epicsExit.h>
 #include <asynDriver.h>
 
 #define epicsExportSharedSymbols
+#include <epicsExport.h>
 #include "ARC_USB.h"
 
 const static int STD_GRATING = 1200;
@@ -76,13 +79,10 @@ public:
 
 };
 
-class ARC_USB::Drive : public asynPortDriver
+class ARC_USB::Drive
 {
 public:
-	Drive(const char* portName, ARC_USB* parent) :
-		asynPortDriver(portName, maxAddr, 1,
-			asynDrvUserMask | asynInt32Mask | asynFloat64Mask,
-			ASYN_MULTIDEVICE | ASYN_CANBLOCK, 1, 0, 0)
+	Drive(ARC_USB* parent)
 	{
 		m_parent = parent;
 	}
@@ -107,12 +107,12 @@ private:
 	int m_maxTurret;
 
 public:
-	GratingDrive(const char* portName, ARC_USB* parent);
+	GratingDrive(ARC_USB* parent);
 
-	virtual asynStatus readEnum(asynUser *pasynUser, char *strings[], int values[], int severities[],
+	asynStatus readEnum(asynUser *pasynUser, char *strings[], int values[], int severities[],
 		size_t nElements, size_t *nIn);
-	virtual asynStatus writeInt32(asynUser *pasynUser, epicsInt32 value);
-	virtual asynStatus readInt32(asynUser *pasynUser, epicsInt32 *value);
+	asynStatus writeInt32(asynUser *pasynUser, epicsInt32 value);
+	asynStatus readInt32(asynUser *pasynUser, epicsInt32 *value);
 
 	std::vector<int> const& gratings() const {
 		return m_gratings;
@@ -120,26 +120,26 @@ public:
 	int grating(int gratingNo) const {
 		return m_gratings[gratingNo];
 	}
-	virtual double readPositionFromMotor(asynUser* pasynUser);
-	virtual double startMovement(asynUser* pasynUser, double targetPosition);
+	double readPositionFromMotor(asynUser* pasynUser);
+	double startMovement(asynUser* pasynUser, double targetPosition);
 };
 
-ARC_USB::GratingDrive::GratingDrive(const char* portName, ARC_USB* parent) :
-	Drive(portName, parent)
+ARC_USB::GratingDrive::GratingDrive(ARC_USB* parent) :
+	Drive(parent)
 {
-	createParam("GRATING", asynParamInt32, &m_GratingPV);
-	createParam("TURRET", asynParamInt32, &m_TurretPV);
-	long maxGratingNr = parent->ARC_get_Mono_Grating_Max(pasynUserSelf, m_Mutex);
+	parent->createParam("GRATING", asynParamInt32, &m_GratingPV);
+	parent->createParam("TURRET", asynParamInt32, &m_TurretPV);
+	long maxGratingNr = parent->ARC_get_Mono_Grating_Max(parent->pasynUserSelf, m_Mutex);
 	m_gratings.resize(maxGratingNr);
 	for (size_t i = 0; i < m_gratings.size(); i++) {
-		long grating = parent->ARC_get_Mono_Grating_Density(pasynUserSelf, m_Mutex, long(i + 1));
+		long grating = parent->ARC_get_Mono_Grating_Density(parent->pasynUserSelf, m_Mutex, long(i + 1));
 		m_gratings[i] = grating;
 	}
-	m_gratingNr = parent->ARC_get_Mono_Grating(pasynUserSelf, m_Mutex)-1;
-	setIntegerParam(m_GratingPV, m_gratingNr);
-	m_turretNr = parent->ARC_get_Mono_Turret(pasynUserSelf, m_Mutex)-1;
-	setIntegerParam(m_TurretPV, m_turretNr);
-	m_maxTurret = parent->ARC_get_Mono_Turret_Max(pasynUserSelf, m_Mutex);
+	m_gratingNr = parent->ARC_get_Mono_Grating(parent->pasynUserSelf, m_Mutex)-1;
+	parent->setIntegerParam(m_GratingPV, m_gratingNr);
+	m_turretNr = parent->ARC_get_Mono_Turret(parent->pasynUserSelf, m_Mutex)-1;
+	parent->setIntegerParam(m_TurretPV, m_turretNr);
+	m_maxTurret = parent->ARC_get_Mono_Turret_Max(parent->pasynUserSelf, m_Mutex);
 }
 
 asynStatus ARC_USB::GratingDrive::readEnum(asynUser *pasynUser, char *strings[], int values[], int severities[],
@@ -160,8 +160,6 @@ asynStatus ARC_USB::GratingDrive::readEnum(asynUser *pasynUser, char *strings[],
 			values[grating] = m_gratings[grating];
 		}
 	}
-	else
-		status = Drive::readEnum(pasynUser, strings, values, severities, nElements, nIn);
 	return status;
 }
 
@@ -173,8 +171,6 @@ asynStatus ARC_USB::GratingDrive::readInt32(asynUser *pasynUser, epicsInt32 *val
 		*value = epicsInt32(readPositionFromMotor(pasynUser) + 0.5);
 	else if (function == m_TurretPV)
 		*value = m_turretNr;
-	else
-		status = Drive::readInt32(pasynUser, value);
 	return status;
 }
 
@@ -184,8 +180,6 @@ asynStatus ARC_USB::GratingDrive::writeInt32(asynUser *pasynUser, epicsInt32 val
 	asynStatus status = asynSuccess;
 	if (function == m_GratingPV)
 		startMovement(pasynUser, value);
-	else
-		status = Drive::writeInt32(pasynUser, value);
 	return status;
 }
 
@@ -199,12 +193,12 @@ public:
 	enum MirrorTypes { EntanceMirror = 1, FrontExitMirror };
 	enum EMirrorPosition { mpFront = 0, mpSide = 1 };
 
-	explicit ExitMirror(const char* portName, ARC_USB* parent) :
-		Drive(portName, parent) {
-		createParam("MIRROR", asynParamInt32, &m_MirrorPV);
+	explicit ExitMirror(ARC_USB* parent) :
+		Drive(parent) {
+		parent->createParam("MIRROR", asynParamInt32, &m_MirrorPV);
 	}
-	virtual asynStatus writeInt32(asynUser *pasynUser, epicsInt32 value);
-	virtual asynStatus readInt32(asynUser *pasynUser, epicsInt32 *value);
+	asynStatus writeInt32(asynUser *pasynUser, epicsInt32 value);
+	asynStatus readInt32(asynUser *pasynUser, epicsInt32 *value);
 private:
 	int m_MirrorPV;
 };
@@ -221,13 +215,13 @@ public:
 	// Slit Port 7 … Front exit slit on a double slave unit
 	// Slit Port 8 … Side exit slit on a double slave unit
 	enum SlitTypes { SideEntanceSlit = 1, FrontEntranceSlit, FrontExitSlit, SideExitSlit };
-	SlitWidth(const char* portName, ARC_USB* parent) :
-		Drive(portName, parent) {
-		createParam("EXITSLITWIDTH", asynParamFloat64, &m_ExitSlitWidth);
-		createParam("ENTRYSLITWIDTH", asynParamFloat64, &m_EntrySlitWidth);
+	SlitWidth(ARC_USB* parent) :
+		Drive(parent) {
+		parent->createParam("EXITSLITWIDTH", asynParamFloat64, &m_ExitSlitWidth);
+		parent->createParam("ENTRYSLITWIDTH", asynParamFloat64, &m_EntrySlitWidth);
 	}
-	virtual asynStatus writeInt32(asynUser *pasynUser, epicsInt32 value);
-	virtual asynStatus readInt32(asynUser *pasynUser, epicsInt32 *value);
+	asynStatus writeInt32(asynUser *pasynUser, epicsInt32 value);
+	asynStatus readInt32(asynUser *pasynUser, epicsInt32 *value);
 private:
 	int m_ExitSlitWidth;
 	int m_EntrySlitWidth;
@@ -251,8 +245,6 @@ asynStatus ARC_USB::SlitWidth::writeInt32(asynUser *pasynUser, epicsInt32 value)
 		else
 			parent()->ARC_set_Mono_Slit_Width(pasynUser, FrontEntranceSlit, value);
 	}
-	else
-		status = Drive::writeInt32(pasynUser, value);
 	return status;
 }
 
@@ -274,8 +266,6 @@ asynStatus ARC_USB::SlitWidth::readInt32(asynUser *pasynUser, epicsInt32 *value)
 		else
 			*value = parent()->ARC_get_Mono_Slit_Width(FrontEntranceSlit, pasynUser);
 	}
-	else
-		status = Drive::readInt32(pasynUser, value);
 	return status;
 }
 
@@ -307,22 +297,6 @@ ARC_USB::ARC_USB(const char* portName, int MonoSerial) :
 	createParam("SERIAL", asynParamOctet, &m_SerialPV);
 	createParam("MOVING", asynParamInt32, &m_MovingPV);
 
-	//grating
-	m_gratingDrive = new GratingDrive(portName, this);
-	bool canChangeGrating = (m_gratingDrive->gratings().size() > 1);
-
-
-	//exit mirror
-	m_exitMirror = NULL;
-	if (canChangeExitMirror(pasynUserSelf)) {
-		m_exitMirror = new ExitMirror(portName, this);
-	}	
-
-	// slit width
-	m_slitWidth = NULL;
-	if (canChangeSlitWidth(pasynUserSelf)) {
-		m_slitWidth = new SlitWidth(portName, this);
-	}
 #ifndef _M_X64
 	if (m_LibraryNotLoaded) {
 		if (Setup_ARC_Instrument_dll() == false) {
@@ -337,6 +311,9 @@ ARC_USB::ARC_USB(const char* portName, int MonoSerial) :
 	// Initialize Handle to "not connected" value
 	m_Handle = ARC_NULL_HANDLE;
 	m_MonoSerial = MonoSerial;
+	m_gratingDrive = NULL;
+	m_exitMirror = NULL;
+	m_slitWidth = NULL;
 
 	if (!ARC_USB::connect(pasynUserSelf, MonoSerial))
 		ThrowException("can't connect", __FUNCTION__, __LINE__);
@@ -368,7 +345,10 @@ void ARC_USB::ThrowException(asynUser *pasynUser, long code, std::string const& 
 		asynPrint(pasynUser, ASYN_TRACE_ERROR, "%s\n", Exception::GetDetails(code, While, Line).c_str());
 	}
 	else
+	{
+		const_cast<ARC_USB*>(this)->disConnect(pasynUser);
 		throw Exception(code, While, Line);
+	}
 }
 #endif
 
@@ -394,8 +374,13 @@ bool ARC_USB::isConnected() const{
 //////////////////////////////////////////////////////////////////////////////////////
 std::string ARC_USB::disConnect(asynUser* pasynUser)
 {
-	if(isConnected())
+	if (isConnected())
+	{
+		delete m_gratingDrive;
+		delete m_exitMirror;
+		delete m_slitWidth;
 		ARC_Close_Enum(pasynUser);
+	}
 	return "";
 }
 
@@ -412,7 +397,7 @@ bool ARC_USB::connect(asynUser* pasynUser, unsigned long timeOut)
 	timed_lock_guard ML(m_Mutex, timeOut);
 	if (!ML.isLocked())
 	{
-		asynPrint(pasynUser, ASYN_TRACE_WARNING, "Unable to acquire mutex");
+		asynPrint(pasynUser, ASYN_TRACE_WARNING, "Unable to acquire mutex\n");
 		return false;
 	}
 
@@ -421,7 +406,7 @@ bool ARC_USB::connect(asynUser* pasynUser, unsigned long timeOut)
 	long Total=ARC_Search_For_Inst();
 	if(Total == 0)
 		ThrowException("no devices found", __FUNCTION__, __LINE__);
-	asynPrint(pasynUser, ASYN_TRACEIO_DEVICE, "%d devices found", Total);
+	asynPrint(pasynUser, ASYN_TRACEIO_DEVICE, "%d devices found\n", Total);
 	if (m_MonoSerial == 0)
 	{
 		if (Total > 1)
@@ -444,7 +429,22 @@ bool ARC_USB::connect(asynUser* pasynUser, unsigned long timeOut)
 				OK = true;
 		}
 	}
-	
+	//grating
+	m_gratingDrive = new GratingDrive(this);
+	bool canChangeGrating = (m_gratingDrive->gratings().size() > 1);
+
+	//exit mirror
+	m_exitMirror = NULL;
+	if (canChangeExitMirror(pasynUserSelf)) {
+		m_exitMirror = new ExitMirror(this);
+	}
+
+	// slit width
+	m_slitWidth = NULL;
+	if (canChangeSlitWidth(pasynUserSelf)) {
+		m_slitWidth = new SlitWidth(this);
+	}
+
 	return OK;
 }
 
@@ -528,6 +528,34 @@ asynStatus ARC_USB::readFloat64(asynUser *pasynUser, epicsFloat64 *value)
 	return status;
 }
 
+asynStatus ARC_USB::readInt32(asynUser *pasynUser, epicsInt32 *value)
+{
+	asynStatus status = asynSuccess;
+	if (m_gratingDrive)
+		status = m_gratingDrive->readInt32(pasynUser, value);
+	if ((status != asynSuccess) && (m_exitMirror))
+		status = m_exitMirror->readInt32(pasynUser, value);
+	if ((status != asynSuccess) && (m_slitWidth))
+		m_slitWidth->readInt32(pasynUser, value);
+	if (status != asynSuccess)
+		status = asynPortDriver::readInt32(pasynUser, value);
+	return status;
+}
+
+asynStatus ARC_USB::writeInt32(asynUser *pasynUser, epicsInt32 value)
+{
+	asynStatus status = asynSuccess;
+	if (m_gratingDrive)
+		status = m_gratingDrive->writeInt32(pasynUser, value);
+	if ((status != asynSuccess) && (m_exitMirror))
+		status = m_exitMirror->writeInt32(pasynUser, value);
+	if ((status != asynSuccess) && (m_slitWidth))
+		m_slitWidth->writeInt32(pasynUser, value);
+	if (status != asynSuccess)
+		status = asynPortDriver::writeInt32(pasynUser, value);
+	return status;
+}
+
 asynStatus ARC_USB::writeFloat64(asynUser *pasynUser, epicsFloat64 value)
 {
 	int function = pasynUser->reason;
@@ -542,6 +570,17 @@ asynStatus ARC_USB::writeFloat64(asynUser *pasynUser, epicsFloat64 value)
 	}
 	else
 		status = asynPortDriver::writeFloat64(pasynUser, value);
+	return status;
+}
+
+asynStatus ARC_USB::readEnum(asynUser *pasynUser, char *strings[], int values[], int severities[],
+	size_t nElements, size_t *nIn)
+{
+	asynStatus status = asynSuccess;
+	if (m_gratingDrive)
+		status = m_gratingDrive->readEnum(pasynUser, strings, values, severities, nElements, nIn);
+	if (status != asynSuccess)
+		status = asynPortDriver::readEnum(pasynUser, strings, values, severities, nElements, nIn);
 	return status;
 }
 
@@ -591,8 +630,6 @@ asynStatus ARC_USB::ExitMirror::writeInt32(asynUser* pasynUser, epicsInt32 value
 		}
 		parent()->ARC_set_Mono_Diverter_Pos(pasynUser, mirror, value);
 	}
-	else
-		status = Drive::writeInt32(pasynUser, value);
 	return status;
 }
 
@@ -621,8 +658,6 @@ asynStatus ARC_USB::ExitMirror::readInt32(asynUser* pasynUser, epicsInt32* value
 			throw new ARC_USB::Exception("unable to read mirrorPos", __FUNCTION__, __LINE__);
 		}
 	}
-	else
-		status = Drive::readInt32(pasynUser, value);
 	return status;
 }
 
@@ -703,7 +738,7 @@ std::string ARC_USB::ARC_get_Mono_Model(asynUser* pasynUser) const
 	char ModelStr[20];
 	timed_lock_guard ML(m_Mutex, ShortTimeout);
 	if (!ML.isLocked())
-		asynPrint(pasynUser, ASYN_TRACE_WARNING, "Unable to obtain mutex while ARC_get_Mono_Model");
+		asynPrint(pasynUser, ASYN_TRACE_WARNING, "Unable to obtain mutex while ARC_get_Mono_Model\n");
 
 #ifdef _M_X64
 	long Error_Code;
@@ -719,7 +754,7 @@ long ARC_USB::ARC_get_Mono_Serial_int32(asynUser* pasynUser) const
 {
 	timed_lock_guard ML(m_Mutex, ShortTimeout); // Const access, no need to force mutex lock
 	if (!ML.isLocked())
-		asynPrint(pasynUser, ASYN_TRACE_WARNING, "Unable to obtain mutex while ARC_get_Mono_Serial_int32");
+		asynPrint(pasynUser, ASYN_TRACE_WARNING, "Unable to obtain mutex while ARC_get_Mono_Serial_int32\n");
 	long Mono_Serial;
 #ifdef _M_X64
 	long Error_Code;
@@ -737,7 +772,7 @@ long  ARC_USB::ARC_get_Mono_Grating_Max(asynUser* pasynUser, std::timed_mutex& M
 	long maxGratingNr = 0;
 	timed_lock_guard ML(Mutex, ShortTimeout); // Const access, no need to force mutex lock
 	if (!ML.isLocked())
-		asynPrint(pasynUser, ASYN_TRACE_WARNING, "Unable to obtain mutex while ARC_get_Mono_Grating_Max");
+		asynPrint(pasynUser, ASYN_TRACE_WARNING, "Unable to obtain mutex while ARC_get_Mono_Grating_Max\n");
 #ifdef _M_X64
 	long Error_Code;
 	if (!::ARC_get_Mono_Grating_Max(m_Handle, &maxGratingNr, &Error_Code))
@@ -754,7 +789,7 @@ long ARC_USB::ARC_get_Mono_Turret(asynUser* pasynUser, std::timed_mutex& Mutex) 
 	long Turret;
 	timed_lock_guard ML(Mutex, ShortTimeout); // Const access, no need to force mutex lock
 	if (!ML.isLocked())
-		asynPrint(pasynUser, ASYN_TRACE_WARNING, "Unable to obtain mutex while ARC_get_Mono_Turret");
+		asynPrint(pasynUser, ASYN_TRACE_WARNING, "Unable to obtain mutex while ARC_get_Mono_Turret\n");
 #ifdef _M_X64
 	long Error_Code;
 	if (!::ARC_get_Mono_Turret(m_Handle, &Turret, &Error_Code))
@@ -785,7 +820,7 @@ long ARC_USB::ARC_get_Mono_Grating_Density(asynUser* pasynUser, std::timed_mutex
 	long Groove_MM = 0;
 	timed_lock_guard ML(Mutex, ShortTimeout); // Const access, no need to force mutex lock
 	if (!ML.isLocked())
-		asynPrint(pasynUser, ASYN_TRACE_WARNING, "Unable to obtain mutex while ARC_get_Mono_Grating_Density");
+		asynPrint(pasynUser, ASYN_TRACE_WARNING, "Unable to obtain mutex while ARC_get_Mono_Grating_Density\n");
 #ifdef _M_X64
 	long Error_Code;
 	if (!::ARC_get_Mono_Grating_Density(m_Handle, Grating, &Groove_MM, &Error_Code))
@@ -802,7 +837,7 @@ long ARC_USB::ARC_get_Mono_Grating(asynUser* pasynUser, std::timed_mutex& Mutex)
 	long Grating = 0;
 	timed_lock_guard ML(Mutex, ShortTimeout); // Const access, no need to force mutex lock
 	if (!ML.isLocked())
-		asynPrint(pasynUser, ASYN_TRACE_WARNING, "Unable to obtain mutex while ARC_get_Mono_Grating");
+		asynPrint(pasynUser, ASYN_TRACE_WARNING, "Unable to obtain mutex while ARC_get_Mono_Grating\n");
 #ifdef _M_X64
 	long Error_Code;
 	if (!::ARC_get_Mono_Grating(m_Handle, &Grating, &Error_Code))
@@ -817,7 +852,7 @@ void ARC_USB::ARC_Close_Enum(asynUser* pasynUser)
 {
 	timed_lock_guard ML(m_Mutex, DefaultTimeout);
 	if (!ML.isLocked())
-		asynPrint(pasynUser, ASYN_TRACE_WARNING, "Unable to obtain mutex at ARC_Close_Enum()");
+		asynPrint(pasynUser, ASYN_TRACE_WARNING, "Unable to obtain mutex at ARC_Close_Enum()\n");
 #ifdef _M_X64
 	long Error_Code;
 	if (!::ARC_Close_Enum(m_Handle, &Error_Code))
@@ -825,7 +860,7 @@ void ARC_USB::ARC_Close_Enum(asynUser* pasynUser)
 #else
 	if (!::ARC_Close_Enum(m_Handle))
 	{
-		asynPrint(pasynUser, ASYN_TRACE_WARNING, "Could not close handle");
+		asynPrint(pasynUser, ASYN_TRACE_ERROR, "Could not close handle\n");
 	}
 #endif
 	m_Handle = ARC_NULL_HANDLE;
@@ -948,7 +983,7 @@ bool ARC_USB::ARC_Mono_Scan_Done(asynUser* pasynUser, double& WaveLength_nm) con
 	long Done_MovingL;
 	if (!::ARC_Mono_Scan_Done(m_Handle, Done_MovingL, WaveLength_nm))
 	{
-		asynPrint(pasynUser, ASYN_TRACE_WARNING, "Could not get wavelength");
+		asynPrint(pasynUser, ASYN_TRACE_WARNING, "Could not get wavelength\n");
 		WaveLength_nm = CurrentPosition();
 		return isMoving();
 	}
@@ -964,7 +999,7 @@ bool ARC_USB::ARC_get_Mono_Diverter_Valid(asynUser* pasynUser, long mirror) cons
 {
 	timed_lock_guard ML(m_Mutex, ShortTimeout); // Const access, no need to force mutex lock
 	if (!ML.isLocked())
-		asynPrint(pasynUser, ASYN_TRACE_WARNING, "Unable to obtain mutex while ARC_get_Mono_Diverter_Valid");
+		asynPrint(pasynUser, ASYN_TRACE_WARNING, "Unable to obtain mutex while ARC_get_Mono_Diverter_Valid\n");
 #ifdef _M_X64
 	long Error_Code;
 	return ::ARC_get_Mono_Diverter_Valid(m_Handle, mirror, &Error_Code);
@@ -993,7 +1028,7 @@ long ARC_USB::ARC_get_Mono_Diverter_Pos(asynUser* pasynUser, long Diverter_Num) 
 	long  Diverter_Pos;
 	timed_lock_guard ML(m_Mutex, ShortTimeout); // Const access, no need to force mutex lock
 	if (!ML.isLocked())
-		asynPrint(pasynUser, ASYN_TRACE_WARNING, "Unable to obtain mutex while ARC_get_Mono_Diverter_Pos");
+		asynPrint(pasynUser, ASYN_TRACE_WARNING, "Unable to obtain mutex while ARC_get_Mono_Diverter_Pos\n");
 #ifdef _M_X64
 	long Error_Code = 0;
 	if (!::ARC_get_Mono_Diverter_Pos(m_Handle, Diverter_Num, &Diverter_Pos, &Error_Code))
@@ -1024,7 +1059,7 @@ long ARC_USB::ARC_get_Mono_Slit_Type(asynUser* pasynUser, long Slit_Pos) const
 {
 	timed_lock_guard ML(m_Mutex, ShortTimeout); // Const access, no need to force mutex lock
 	if (!ML.isLocked())
-		asynPrint(pasynUser, ASYN_TRACE_WARNING, "Unable to obtain mutex while ARC_get_Mono_Slit_Type");
+		asynPrint(pasynUser, ASYN_TRACE_WARNING, "Unable to obtain mutex while ARC_get_Mono_Slit_Type\n");
 	long Slit_Type;
 #ifdef _M_X64
 	long Error_Code = 0;
@@ -1056,7 +1091,7 @@ long ARC_USB::ARC_get_Mono_Slit_Width(long Slit_Pos, asynUser* pasynUser) const
 {
 	timed_lock_guard ML(m_Mutex, DefaultTimeout); // Const access, no need to force mutex lock
 	if (!ML.isLocked())
-		asynPrint(pasynUser, ASYN_TRACE_WARNING, "Unable to obtain mutex while ARC_get_Mono_Slit_Width");
+		asynPrint(pasynUser, ASYN_TRACE_WARNING, "Unable to obtain mutex while ARC_get_Mono_Slit_Width\n");
 	long Slit_Width;
 #ifdef _M_X64
 	long Error_Code = 0;
@@ -1069,8 +1104,72 @@ long ARC_USB::ARC_get_Mono_Slit_Width(long Slit_Pos, asynUser* pasynUser) const
 	return Slit_Width;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//																								//
+//	static void ARC_InstrumentPortDriverConfigure(const iocshArgBuf *args)						//
+//																								//
+//	Description:																				//
+//		This function will be invoked when from the st.cmd starup script.						//
+//		It creates the object and also schedules the exit event.								//
+//																								//
+//	Parameters:																					//
+//		asynPortName. This is the Asyn port name (e.g. ARC_Instrument).							//
+//		monoSerial. This will be the serial number of of desired instrument (0 for any).		//
+//																								//
+//////////////////////////////////////////////////////////////////////////////////////////////////
+void ARC_USB::ARC_InstrumentPortDriverConfigure(const iocshArgBuf *args)
+{
+	try {
+		const char* asynPortName = args[0].sval;
+		int monoSerial = atoi(args[1].sval);
+		Motors::ARC_USB* Instance = new Motors::ARC_USB(asynPortName, monoSerial);
+		epicsAtExit(ARC_InstrumentExitFunc, Instance);
+	}
+	catch (Exception const& E) {
+		fprintf(stderr, "%s\n", E.what());
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//																								//
+//	void ARC_InstrumentExitFunc(void * param)														//
+//																								//
+//	Description:																				//
+//		This function will be invoked when the IOC exits.										//
+//		In order to not leak resources, it destroys the object that's been created.				//
+//																								//
+//////////////////////////////////////////////////////////////////////////////////////////////////
+void ARC_USB::ARC_InstrumentExitFunc(void * param)
+{
+	Motors::ARC_USB* Instance = static_cast<Motors::ARC_USB*>(param);
+	delete Instance;
+}
+
 } // namespace Motors
 
+static const iocshArg initArg0 = { "asynPortName", iocshArgString };
+static const iocshArg initArg1 = { "monoSerial", iocshArgString };
+static const iocshArg * const initArgs[] = { &initArg0, &initArg1 };
+static const iocshFuncDef initFuncDef = { "ARC_InstrumentPortDriverConfigure",2,initArgs };
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//																								//
+//	static void ARC_InstrumentRegistrar(void)														//
+//																								//
+//	Description:																				//
+//		Registers the functions to be called within the IOC.									//
+//																								//
+//////////////////////////////////////////////////////////////////////////////////////////////////
+static void ARC_InstrumentRegistrar(void)
+{
+	iocshRegister(&initFuncDef, Motors::ARC_USB::ARC_InstrumentPortDriverConfigure);
+}
+
+extern "C" {
+
+	epicsExportRegistrar(ARC_InstrumentRegistrar);
+
+}
 
 
 //EOF ========================================================================

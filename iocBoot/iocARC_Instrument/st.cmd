@@ -2,26 +2,19 @@
 
 ## Set environment variables
 < envPaths
-epicsEnvSet "STREAM_PROTOCOL_PATH" "$(TOP)/db"
 
 ## Change to IOC application's <top> directory
 cd "${TOP}"
 
-## Register all support components
-dbLoadDatabase "dbd/ARC_InstrumentDev.dbd"
-ARC_Instrument_registerRecordDeviceDriver pdbbase
+epicsEnvSet("ASYNPORT", "MAST")
 
-##Configure communications
-drvAsynSerialPortConfigure("ARC_Instrument","COM3")
-asynSetOption("ARC_Instrument", 0, "baud", "115200")
-asynSetOption("ARC_Instrument", 0, "bits", "8")
-asynSetOption("ARC_Instrument", 0, "parity", "none")
-asynSetOption("ARC_Instrument", 0, "stop", "1")
-asynSetOption("ARC_Instrument", 0, "clocal", "Y")
-asynSetOption("ARC_Instrument", 0, "crtscts", "N")
+## Register all support components
+dbLoadDatabase "dbd/ARC_Instrument.dbd"
+ARC_Instrument_registerRecordDeviceDriver pdbbase
+ARC_InstrumentPortDriverConfigure($(ASYNPORT), 0)
 
 ## Load record instances
-dbLoadTemplate("db/ARC_Instrument.substitutions")
+dbLoadTemplate("db/ARC_Instrument.substitutions", "PORT=$(ASYNPORT),ADDR=0")
 
 ## Initialise IOC instance
 cd "${TOP}/iocBoot/${IOC}"

@@ -37,7 +37,6 @@ record (stringin, "$(P)$(R)Serial") {
 }
 
 record (mbbo, "$(P)$(R)Grating") {
-    field (DTYP, "stream")
     field (DESC, "Grating of Spectrometer")
 	field (OUT,  "@asyn($(PORT),$(ADDR),1)GRATING")
     info("asyn:READBACK", "1")
@@ -49,14 +48,12 @@ record (longin, "$(P)$(R)Turret") {
 }
 
 record (mbbo, "$(P)$(R)Mirror") {
-    field (DTYP, "stream")
     field (DESC, "Mirror of Spectrometer")
 	field (OUT,  "@asyn($(PORT),$(ADDR),1)MIRROR")
     info("asyn:READBACK", "1")
 }
 
 record (bi, "$(P)$(R)Moving") {
-    field (DTYP, "stream")
     field (DESC, "Specttometer is moving")
 	field (OUT,  "@asyn($(PORT),$(ADDR),1)MOVING")
     field (SCAN, "I/O Intr")
