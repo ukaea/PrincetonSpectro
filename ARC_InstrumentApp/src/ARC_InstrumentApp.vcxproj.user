@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_DLL|Win32'">
+    <LocalDebuggerCommandArguments>..\..\iocBoot\iocARC_Instrument\st.cmd &gt; iocARC_Instrument.log 2&gt;&amp;1</LocalDebuggerCommandArguments>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerEnvironment>TOP=../..
+IOC=iocARC_Instrument
+PATH=../Acton</LocalDebuggerEnvironment>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_LIB|Win32'">
+    <LocalDebuggerCommandArguments>..\..\iocBoot\iocARC_Instrument\st.cmd &gt; iocARC_Instrument.log 2&gt;&amp;1</LocalDebuggerCommandArguments>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerEnvironment>TOP=../..
+IOC=iocARC_Instrument
+PATH=../Acton</LocalDebuggerEnvironment>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_DLL|Win32'">
+    <LocalDebuggerCommandArguments>..\..\iocBoot\iocARC_Instrument\st.cmd &gt; iocARC_Instrument.log 2&gt;&amp;1</LocalDebuggerCommandArguments>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerEnvironment>TOP=../..
+IOC=iocARC_Instrument
+PATH=../Acton</LocalDebuggerEnvironment>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_LIB|Win32'">
+    <LocalDebuggerCommandArguments>..\..\iocBoot\iocARC_Instrument\st.cmd &gt; iocARC_Instrument.log 2&gt;&amp;1</LocalDebuggerCommandArguments>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerEnvironment>TOP=../..
+IOC=iocARC_Instrument
+PATH=../Acton</LocalDebuggerEnvironment>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_DLL|x64'">
+    <LocalDebuggerCommandArguments>..\..\iocBoot\iocARC_Instrument\st.cmd &gt; iocARC_Instrument.log 2&gt;&amp;1</LocalDebuggerCommandArguments>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerEnvironment>TOP=../..
+IOC=iocARC_Instrument
+PATH=../Acton</LocalDebuggerEnvironment>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_LIB|x64'">
+    <LocalDebuggerCommandArguments>..\..\iocBoot\iocARC_Instrument\st.cmd &gt; iocARC_Instrument.log 2&gt;&amp;1</LocalDebuggerCommandArguments>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerEnvironment>TOP=../..
+IOC=iocARC_Instrument
+PATH=../Acton</LocalDebuggerEnvironment>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_DLL|x64'">
+    <LocalDebuggerCommandArguments>..\..\iocBoot\iocARC_Instrument\st.cmd &gt; iocARC_Instrument.log 2&gt;&amp;1</LocalDebuggerCommandArguments>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerEnvironment>TOP=../..
+IOC=iocARC_Instrument
+PATH=../Acton</LocalDebuggerEnvironment>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_LIB|x64'">
+    <LocalDebuggerCommandArguments>..\..\iocBoot\iocARC_Instrument\st.cmd &gt; iocARC_Instrument.log 2&gt;&amp;1</LocalDebuggerCommandArguments>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerEnvironment>TOP=../..
+IOC=iocARC_Instrument
+PATH=../Acton</LocalDebuggerEnvironment>
+  </PropertyGroup>
+</Project>

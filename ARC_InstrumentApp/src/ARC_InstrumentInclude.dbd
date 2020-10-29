@@ -1,0 +1,4 @@
+include "base.dbd"
+include "menuScan.dbd"
+include "asyn.dbd"
+registrar(ARC_InstrumentRegistrar)

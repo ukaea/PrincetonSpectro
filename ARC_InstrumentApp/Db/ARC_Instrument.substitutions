@@ -1,0 +1,5 @@
+file "db/ARC_Instrument.template"
+{
+    pattern{P, R, PORT}
+    {"MAST:HZDR:", "MAST:", "MAST"}
+}
