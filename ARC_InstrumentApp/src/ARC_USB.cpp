@@ -96,7 +96,7 @@ bool ARC_USB::m_LibraryNotLoaded = true;
  //////////////////////////////////////////////////////////////////////////////////////
 ARC_USB::ARC_USB(const char* portName, int MonoSerial) :
     asynPortDriver(portName, 1, Mask(), Mask(),
-        ASYN_MULTIDEVICE | ASYN_CANBLOCK, 1, 0, 0)
+        ASYN_CANBLOCK, 1, 0, 0)
 {
     asynStatus status = createParam("WAVELENGTH", asynParamFloat64, &m_WavelengthPV);
     if (status == asynSuccess)
@@ -117,11 +117,17 @@ ARC_USB::ARC_USB(const char* portName, int MonoSerial) :
         status = createParam("EXITSLITWIDTH", asynParamFloat64, &m_ExitSlitWidthPV);
     if (status == asynSuccess)
         status = createParam("ENTRYSLITWIDTH", asynParamFloat64, &m_EntrySlitWidthPV);
+    if (status != asynSuccess)
+        ThrowException(pasynUserSelf, "Could not create PVs", __FUNCTION__, __LINE__);
 
+    // Initialize Handle to "not connected" value
+    m_Handle = ARC_NULL_HANDLE;
 #ifndef _M_X64
     if (m_LibraryNotLoaded) {
+        char CurrentDirectory[MAX_PATH];
+        GetCurrentDirectory(MAX_PATH, CurrentDirectory);
         if (Setup_ARC_Instrument_dll() == false) {
-            ThrowException("unable to load 'Acton\\ARC_Instrument.dll'", __FUNCTION__, __LINE__);
+            ThrowException(pasynUserSelf, "unable to load 'Acton\\ARC_Instrument.dll'", __FUNCTION__, __LINE__);
         }
         else {
             m_LibraryNotLoaded = false;
@@ -129,15 +135,13 @@ ARC_USB::ARC_USB(const char* portName, int MonoSerial) :
     }
 #endif
 
-    // Initialize Handle to "not connected" value
-    m_Handle = ARC_NULL_HANDLE;
     m_MonoSerial = MonoSerial;
     m_isMoving = false;
 
     timed_lock_guard ML(m_Mutex, DefaultTimeout);
     if (!ML.isLocked())
         asynPrint(pasynUserSelf, ASYN_TRACE_ERROR, "Unable to acquire mutex\n");
-    else if (!connect(pasynUserSelf))
+    else if (connect(pasynUserSelf) != asynSuccess)
         asynPrint(pasynUserSelf, ASYN_TRACE_ERROR, "can't connect\n");
 }
 
@@ -156,23 +160,17 @@ int ARC_USB::Mask()
 //		std::string const& While, long Line, bool ErrorToWarning = false) const		//
 //																			        //
 //////////////////////////////////////////////////////////////////////////////////////
-void ARC_USB::ThrowException(std::string const& Details, std::string const& While, long Line) const
+void ARC_USB::ThrowException(asynUser *pasynUser, std::string const& Details, std::string const& While, long Line) const
 {
+    const_cast<ARC_USB*>(this)->disConnect(pasynUser);
     throw Exception(Details, While, Line);
 }
 
 #ifdef _M_X64
-void ARC_USB::ThrowException(asynUser *pasynUser, long code, std::string const& While, long Line, bool ErrorToWarning /*=false*/) const
+void ARC_USB::ThrowException(asynUser *pasynUser, long code, std::string const& While, long Line) const
 {
-    if (ErrorToWarning)
-    {
-        asynPrint(pasynUser, ASYN_TRACE_ERROR, "%s\n", Exception::GetDetails(code, While, Line).c_str());
-    }
-    else
-    {
-        const_cast<ARC_USB*>(this)->disConnect(pasynUser);
-        throw Exception(code, While, Line);
-    }
+    const_cast<ARC_USB*>(this)->disConnect(pasynUser);
+    throw Exception(code, While, Line);
 }
 #endif
 
@@ -217,14 +215,14 @@ asynStatus ARC_USB::connect(asynUser* pasynUser)
 {
     asynStatus status = asynError;
     // Search devices
-    long Total = ARC_Search_For_Inst();
+    long Total = ARC_Search_For_Inst(pasynUser);
     if (Total == 0)
-        ThrowException("no devices found", __FUNCTION__, __LINE__);
+        ThrowException(pasynUser, "no devices found", __FUNCTION__, __LINE__);
     asynPrint(pasynUser, ASYN_TRACEIO_DEVICE, "%d devices found\n", Total);
     if (m_MonoSerial == 0)
     {
         if (Total > 1)
-            ThrowException("More than one device found", __FUNCTION__, __LINE__);
+            ThrowException(pasynUser, "More than one device found", __FUNCTION__, __LINE__);
         // Assuming only one device attached, so we directly open the first
         // one, that has therefore code ID 0.
         if (ARC_Open_Mono(pasynUser, 0))
@@ -258,27 +256,7 @@ asynStatus ARC_USB::connect(asynUser* pasynUser)
     setIntegerParam(m_TurretPV, m_turretNr);
     m_maxTurret = ARC_get_Mono_Turret_Max(pasynUserSelf);
 
-    bool canChangeGrating = (m_gratings.size() > 1);
-
     return status;
-}
-
-//////////////////////////////////////////////////////////////////////////////////////
-//																			        //
-//	double ARC_USB::startMovement(double position, float speed)					//
-//																					//
-//	Description:																	//
-//		overriden AbstractMotorControl method										//
-//		The required feature is a simple Goto(position) command which is performed  //
-//		by the monochromator always at maximum speed.								//		
-//		As consequence, the movement ignores speed.									//
-//																					//
-//////////////////////////////////////////////////////////////////////////////////////
-double ARC_USB::startMovement(asynUser* pasynUser, double position)
-{
-    setisMoving(true);
-    ARC_set_Mono_Wavelength_nm(pasynUser, position);
-    return position;
 }
 
 asynStatus ARC_USB::readOctet(asynUser *pasynUser, char *value, size_t maxChars,
@@ -490,7 +468,8 @@ asynStatus ARC_USB::writeFloat64(asynUser *pasynUser, epicsFloat64 value)
     int function = pasynUser->reason;
     if (function == m_WavelengthPV)
     {
-        startMovement(pasynUser, value);
+        setisMoving(true);
+        ARC_set_Mono_Wavelength_nm(pasynUser, value);
     }
     else if (function == m_ScanRatePV)
     {
@@ -568,15 +547,6 @@ void ARC_USB::setisMoving(bool isMoving)
     callParamCallbacks(0, m_MovingPV);
 }
 
-// slit widths
-bool ARC_USB::canChangeSlitWidth(asynUser* pasynUser) const
-{
-    bool canChangeSlitWidth = false;
-    for (long Slit_Pos = SideEntanceSlit; Slit_Pos <= SideExitSlit; Slit_Pos++)
-        canChangeSlitWidth |= isMovableSlit(pasynUser, Slit_Pos);
-    return canChangeSlitWidth;
-}
-
 bool ARC_USB::isMovableSlit(asynUser* pasynUser, long Slit_Pos) const
 {
     bool isMovableSlit = false;
@@ -633,7 +603,7 @@ long  ARC_USB::ARC_get_Mono_Grating_Max(asynUser* pasynUser) const
         ThrowException(pasynUser, Error_Code, __FUNCTION__, __LINE__);
 #else
     if (!::ARC_get_Mono_Grating_Max(m_Handle, maxGratingNr))
-        ThrowException("Could not get max grating", __FUNCTION__, __LINE__);
+        ThrowException(pasynUser, "Could not get max grating", __FUNCTION__, __LINE__);
 #endif
     return maxGratingNr;
 }
@@ -647,7 +617,7 @@ long ARC_USB::ARC_get_Mono_Turret(asynUser* pasynUser) const
         ThrowException(pasynUser, Error_Code, __FUNCTION__, __LINE__);
 #else
     if (!::ARC_get_Mono_Turret(m_Handle, Turret))
-        ThrowException("Could not get turret", __FUNCTION__, __LINE__);
+        ThrowException(pasynUser, "Could not get turret", __FUNCTION__, __LINE__);
 #endif
     return Turret;
 }
@@ -661,7 +631,7 @@ long ARC_USB::ARC_get_Mono_Turret_Max(asynUser* pasynUser) const
         ThrowException(pasynUser, Error_Code, __FUNCTION__, __LINE__);
 #else
     if (!::ARC_get_Mono_Turret_Max(m_Handle, maxTurretNr))
-        ThrowException("Could not get max turret", __FUNCTION__, __LINE__);
+        ThrowException(pasynUser, "Could not get max turret", __FUNCTION__, __LINE__);
 #endif
     return maxTurretNr;
 }
@@ -675,7 +645,7 @@ long ARC_USB::ARC_get_Mono_Grating_Density(asynUser* pasynUser, long Grating) co
         ThrowException(pasynUser, Error_Code, __FUNCTION__, __LINE__);
 #else
     if (!::ARC_get_Mono_Grating_Density(m_Handle, Grating, Groove_MM))
-        ThrowException("Could not get grating density", __FUNCTION__, __LINE__);
+        ThrowException(pasynUser, "Could not get grating density", __FUNCTION__, __LINE__);
 #endif
     return Groove_MM;
 }
@@ -686,9 +656,10 @@ long ARC_USB::ARC_get_Mono_Grating(asynUser* pasynUser) const
 #ifdef _M_X64
     long Error_Code;
     if (!::ARC_get_Mono_Grating(m_Handle, &Grating, &Error_Code))
-        ThrowException(pasynUser, Error_Code, __FUNCTION__, __LINE__, true);
+        ThrowException(pasynUser, Error_Code, __FUNCTION__, __LINE__);
 #else
-    ::ARC_get_Mono_Grating(m_Handle, Grating);
+    if (!::ARC_get_Mono_Grating(m_Handle, Grating))
+        ThrowException(pasynUser, "Could not get monchromator grating", __FUNCTION__, __LINE__);
 #endif
     return Grating;
 }
@@ -708,7 +679,7 @@ void ARC_USB::ARC_Close_Enum(asynUser* pasynUser)
     m_Handle = ARC_NULL_HANDLE;
 }
 
-long ARC_USB::ARC_Search_For_Inst() const
+long ARC_USB::ARC_Search_For_Inst(asynUser* pasynUser) const
 {
     long total = 0;
 #ifdef _M_X64
@@ -716,22 +687,24 @@ long ARC_USB::ARC_Search_For_Inst() const
 #else
     if (!::ARC_Search_For_Inst(total))
 #endif
-        ThrowException("failed to search for devices", __FUNCTION__, __LINE__);
+        ThrowException(pasynUser, "failed to search for devices", __FUNCTION__, __LINE__);
     return total;
 }
 
 bool ARC_USB::ARC_Open_Mono(asynUser* pasynUser, long Enum_Num)
 {
+    bool OK = false;
 #ifdef _M_X64
     long Error_Code;
-    bool OK = ::ARC_Open_Mono(Enum_Num, &m_Handle, &Error_Code);
+    OK = ::ARC_Open_Mono(Enum_Num, &m_Handle, &Error_Code);
     if (!OK)
         asynPrint(pasynUser, ASYN_TRACE_ERROR, "%s\n", Exception::GetDetails(Error_Code, __FUNCTION__, __LINE__).c_str());
-    return OK;
-
 #else
-    return (::ARC_Open_Mono(Enum_Num, m_Handle) != 0);
+    OK = (::ARC_Open_Mono(Enum_Num, m_Handle) != 0);
+    if (!OK)
+        asynPrint(pasynUser, ASYN_TRACE_ERROR, "%s\n", "Could not open monchromator\n");
 #endif
+    return OK;
 }
 
 bool  ARC_USB::ARC_Open_Mono_Port(asynUser* pasynUser, long comPort)
@@ -755,7 +728,7 @@ void ARC_USB::ARC_set_Mono_Wavelength_nm(asynUser* pasynUser, double Wavelength)
         ThrowException(pasynUser, Error_Code, __FUNCTION__, __LINE__);
 #else
     if (!::ARC_set_Mono_Wavelength_nm(m_Handle, Wavelength))
-        ThrowException("Could not set wavelength", __FUNCTION__, __LINE__);
+        ThrowException(pasynUser, "Could not set wavelength", __FUNCTION__, __LINE__);
 #endif
 }
 
@@ -768,7 +741,7 @@ double ARC_USB::ARC_get_Mono_Init_ScanRate_nm(asynUser* pasynUser)
         ThrowException(pasynUser, Error_Code, __FUNCTION__, __LINE__);
 #else
     if (!::ARC_get_Mono_Init_ScanRate_nm(m_Handle, ScanRate))
-        ThrowException("Could not get scan rate", __FUNCTION__, __LINE__);
+        ThrowException(pasynUser, "Could not get scan rate", __FUNCTION__, __LINE__);
 #endif
     return ScanRate;
 }
@@ -781,7 +754,7 @@ void ARC_USB::ARC_set_Mono_Init_ScanRate_nm(asynUser* pasynUser, double ScanRate
         ThrowException(pasynUser, Error_Code, __FUNCTION__, __LINE__);
 #else
     if (!::ARC_set_Mono_Init_ScanRate_nm(m_Handle, ScanRate))
-        ThrowException("Could not set scan rate", __FUNCTION__, __LINE__);
+        ThrowException(pasynUser, "Could not set scan rate", __FUNCTION__, __LINE__);
 #endif
 }
 
@@ -796,11 +769,11 @@ bool ARC_USB::ARC_Mono_Scan_Done(asynUser* pasynUser, double& WaveLength_nm) con
         return isMoving();
     }
 #else
-    long Done_MovingL;
-    if (!::ARC_Mono_Scan_Done(m_Handle, Done_MovingL, WaveLength_nm))
+    long Done_MovingL = 1;
+    if (!ARC_get_Mono_Wavelength_nm(m_Handle, WaveLength_nm))
+        //    if (!::ARC_Mono_Scan_Done(m_Handle, Done_MovingL, WaveLength_nm)) *This function throws an access violation*
     {
         asynPrint(pasynUser, ASYN_TRACE_ERROR, "Could not get wavelength\n");
-        WaveLength_nm = CurrentPosition();
         return isMoving();
     }
     Done_Moving = (Done_MovingL != 0);
@@ -843,7 +816,7 @@ void  ARC_USB::ARC_set_Mono_Diverter_Pos(asynUser* pasynUser, long Diverter_Num,
         ThrowException(pasynUser, Error_Code, __FUNCTION__, __LINE__);
 #else
     if (!::ARC_set_Mono_Diverter_Pos(m_Handle, Diverter_Num, Diverter_Pos))
-        ThrowException("Could not set divertor position", __FUNCTION__, __LINE__);
+        ThrowException(pasynUser, "Could not set divertor position", __FUNCTION__, __LINE__);
 #endif
 }
 
@@ -856,7 +829,7 @@ long ARC_USB::ARC_get_Mono_Diverter_Pos(asynUser* pasynUser, long Diverter_Num) 
         ThrowException(pasynUser, Error_Code, __FUNCTION__, __LINE__);
 #else
     if (!::ARC_get_Mono_Diverter_Pos(m_Handle, Diverter_Num, Diverter_Pos))
-        ThrowException("Could not get divertor position", __FUNCTION__, __LINE__);
+        ThrowException(pasynUser, "Could not get divertor position", __FUNCTION__, __LINE__);
 #endif
     return Diverter_Pos;
 }
@@ -869,7 +842,7 @@ void ARC_USB::ARC_set_Mono_Grating(asynUser* pasynUser, long Grating)
         ThrowException(pasynUser, Error_Code, __FUNCTION__, __LINE__);
 #else
     if (!::ARC_set_Mono_Grating(m_Handle, Grating))
-        ThrowException("Could not set grating", __FUNCTION__, __LINE__);
+        ThrowException(pasynUser, "Could not set grating", __FUNCTION__, __LINE__);
 #endif
 }
 
@@ -882,7 +855,7 @@ long ARC_USB::ARC_get_Mono_Slit_Type(asynUser* pasynUser, long Slit_Pos) const
         ThrowException(pasynUser, Error_Code, __FUNCTION__, __LINE__);
 #else
     if (!::ARC_get_Mono_Slit_Type(m_Handle, Slit_Pos, Slit_Type))
-        ThrowException("Could not get slit type", __FUNCTION__, __LINE__);
+        ThrowException(pasynUser, "Could not get slit type", __FUNCTION__, __LINE__);
 #endif
     return Slit_Type;
 }
@@ -895,7 +868,7 @@ void  ARC_USB::ARC_set_Mono_Slit_Width(asynUser* pasynUser, long Slit_Pos, long 
         ThrowException(pasynUser, Error_Code, __FUNCTION__, __LINE__);
 #else
     if (!::ARC_set_Mono_Slit_Width(m_Handle, Slit_Pos, Slit_Width))
-        ThrowException("Could not set slit width", __FUNCTION__, __LINE__);
+        ThrowException(pasynUser, "Could not set slit width", __FUNCTION__, __LINE__);
 #endif
 }
 
@@ -908,7 +881,7 @@ long ARC_USB::ARC_get_Mono_Slit_Width(long Slit_Pos, asynUser* pasynUser) const
         ThrowException(pasynUser, Error_Code, __FUNCTION__, __LINE__);
 #else
     if (!::ARC_get_Mono_Slit_Width(m_Handle, Slit_Pos, Slit_Width))
-        ThrowException("Could not get slit width", __FUNCTION__, __LINE__);
+        ThrowException(pasynUser, "Could not get slit width", __FUNCTION__, __LINE__);
 #endif
     return Slit_Width;
 }
@@ -936,6 +909,7 @@ void ARC_USB::ARC_InstrumentPortDriverConfigure(const iocshArgBuf *args)
     }
     catch (Exception const& E) {
         fprintf(stderr, "%s\n", E.what());
+        exit(1);
     }
 }
 

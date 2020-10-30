@@ -62,7 +62,6 @@ private:
 	int m_gratingNr;
 	int m_turretNr;
 	int m_maxTurret;
-	double m_CurrentPosition;
 	bool m_isMoving;
 public:
 	bool isConnected() const;
@@ -71,23 +70,16 @@ public:
 
 	asynStatus connect(asynUser* pasynUser);
 	std::string disConnect(asynUser* pasynUser);
-	double startMovement(asynUser* pasynUser, double position);
-	double CurrentPosition() const {
-		return m_CurrentPosition;
-	}
 	bool   isMoving() const {
 		return m_isMoving;
 	}
 	void setisMoving(bool isMoving);
 
-	// slit widths
-	bool canChangeSlitWidth(asynUser* pasynUser) const;
-
 protected:
 	static int Mask();
-	void ThrowException(std::string const& Details, std::string const& While, long Line) const;
+	void ThrowException(asynUser *pasynUser, std::string const& Details, std::string const& While, long Line) const;
 #ifdef _M_X64
-	void ThrowException(asynUser *pasynUser, long code, std::string const& While, long Line, bool ErrorToWarning = false) const;
+	void ThrowException(asynUser *pasynUser, long code, std::string const& While, long Line) const;
 #endif
 	virtual asynStatus readOctet(asynUser *pasynUser, char *value, size_t maxChars,
 		size_t *nActual, int *eomReason);
@@ -106,7 +98,7 @@ protected:
 	long ARC_get_Mono_Turret_Max(asynUser* pasynUser) const;
 	long ARC_get_Mono_Turret(asynUser* pasynUser) const;
 	void ARC_Close_Enum(asynUser* pasynUser);
-	long ARC_Search_For_Inst() const;
+	long ARC_Search_For_Inst(asynUser* pasynUser) const;
 	bool ARC_Open_Mono(asynUser* pasynUser, long Enum_Num);
 	bool ARC_Open_Mono_Port(asynUser* pasynUser, long comPort);
 	void ARC_set_Mono_Wavelength_nm(asynUser* pasynUser, double Wavelength);
