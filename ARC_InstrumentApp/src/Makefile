@@ -19,6 +19,12 @@ ARC_Instrument_DBD += ARC_InstrumentInclude.dbd
 
 # Add all the support libraries needed by this IOC
 ARC_InstrumentDev_LIBS += asyn
+
+ifeq (windows-x64, $(findstring windows-x64, $(T_A)))
+ARC_InstrumentDev_SYS_LIBS += ..\..\Acton\ARC_Instrument_x64
+endif
+
+ARC_InstrumentApp_LIBS += ARC_InstrumentDev
 ARC_InstrumentApp_LIBS += asyn
 
 # IsoPlane_registerRecordDeviceDriver.cpp derives from IsoPlaneDev.dbd
