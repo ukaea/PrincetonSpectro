@@ -3,6 +3,8 @@ record (ao, "$(P)Wavelength") {
     field (DESC, "Set wavelength")
     field (EGU, "nm")
     field (OUT,  "@asyn($(PORT),$(ADDR),1)WAVELENGTH")
+    field (SCAN, "5 second")
+    field (PINI, "YES")
     info  ("asyn:READBACK", "1")
 }
 

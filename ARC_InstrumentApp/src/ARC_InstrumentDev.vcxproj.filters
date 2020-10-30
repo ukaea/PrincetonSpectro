@@ -54,8 +54,8 @@
     <None Include="O.Common\ARC_Instrument.dbd">
       <Filter>O.Common</Filter>
     </None>
-    <None Include="ARC_InstrumentInclude.dbd">
-      <Filter>Source Files</Filter>
-    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="ARC_InstrumentInclude.dbd" />
   </ItemGroup>
 </Project>
