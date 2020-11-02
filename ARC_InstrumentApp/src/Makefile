@@ -11,7 +11,7 @@ include $(TOP)/configure/CONFIG
 LIBRARY_IOC = ARC_InstrumentDev
 PROD_IOC = ARC_InstrumentApp
 
-# IsoPlaneDev.dbd will be created and installed
+# ARC_Instrument.dbd will be created and installed
 DBD += ARC_Instrument.dbd
 
 # Include dbd files from all support applications:
@@ -27,7 +27,7 @@ endif
 ARC_InstrumentApp_LIBS += ARC_InstrumentDev
 ARC_InstrumentApp_LIBS += asyn
 
-# IsoPlane_registerRecordDeviceDriver.cpp derives from IsoPlaneDev.dbd
+# IsoPlane_registerRecordDeviceDriver.cpp derives from ARC_Instrument.dbd
 ARC_InstrumentDev_SRCS += ARC_USB.cpp
 ARC_InstrumentApp_SRCS += ARC_Instrument_registerRecordDeviceDriver.cpp
 
