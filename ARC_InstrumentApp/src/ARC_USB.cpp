@@ -114,9 +114,9 @@ ARC_USB::ARC_USB(const char* portName, int MonoSerial) :
     if (status == asynSuccess)
         status = createParam("MIRROR", asynParamInt32, &m_MirrorPV);
     if (status == asynSuccess)
-        status = createParam("EXITSLITWIDTH", asynParamFloat64, &m_ExitSlitWidthPV);
+        status = createParam("EXITSLITWIDTH", asynParamInt32, &m_ExitSlitWidthPV);
     if (status == asynSuccess)
-        status = createParam("ENTRYSLITWIDTH", asynParamFloat64, &m_EntrySlitWidthPV);
+        status = createParam("ENTRYSLITWIDTH", asynParamInt32, &m_EntrySlitWidthPV);
     if (status != asynSuccess)
         ThrowException(pasynUserSelf, "Could not create PVs", __FUNCTION__, __LINE__);
 
@@ -136,7 +136,6 @@ ARC_USB::ARC_USB(const char* portName, int MonoSerial) :
 #endif
 
     m_MonoSerial = MonoSerial;
-    m_isMoving = false;
 
     timed_lock_guard ML(m_Mutex, DefaultTimeout);
     if (!ML.isLocked())
@@ -251,9 +250,7 @@ asynStatus ARC_USB::connect(asynUser* pasynUser)
         m_gratings[i] = grating;
     }
     m_gratingNr = ARC_get_Mono_Grating(pasynUserSelf) - 1;
-    setIntegerParam(m_GratingPV, m_gratingNr);
     m_turretNr = ARC_get_Mono_Turret(pasynUserSelf) - 1;
-    setIntegerParam(m_TurretPV, m_turretNr);
     m_maxTurret = ARC_get_Mono_Turret_Max(pasynUserSelf);
 
     return status;
@@ -319,7 +316,6 @@ asynStatus ARC_USB::readFloat64(asynUser *pasynUser, epicsFloat64 *value)
     {
         double Wavelength_nm = 0;
         bool done = ARC_Mono_Scan_Done(pasynUser, Wavelength_nm);
-        setisMoving(!done);
         *value = Wavelength_nm;
     }
     else if (function == m_ScanRatePV)
@@ -328,6 +324,51 @@ asynStatus ARC_USB::readFloat64(asynUser *pasynUser, epicsFloat64 *value)
     }
     else
         status = asynPortDriver::readFloat64(pasynUser, value);
+    return status;
+}
+
+epicsInt32 ARC_USB::getgratingLines(asynUser* pasynUser)
+{
+    m_gratingNr = ARC_get_Mono_Grating(pasynUser) - 1;
+    int gratingLines = m_gratings[m_gratingNr];
+    return gratingLines;
+}
+
+ARC_USB::EMirrorPosition ARC_USB::getMirrorPosition(asynUser* pasynUser)
+{
+    EMirrorPosition MirrorPosition;
+    long mirror = 2;	// 2 means "exit mirror"
+    long position = ARC_get_Mono_Diverter_Pos(pasynUser, mirror);	// 3 means "front exit slit"
+    switch (position) {
+        case 3: MirrorPosition = mpFront; break;
+        case 4: MirrorPosition = mpSide; break;
+        default:
+            throw new ARC_USB::Exception("unable to read mirrorPos", __FUNCTION__, __LINE__);
+    }
+    return MirrorPosition;
+}
+
+asynStatus ARC_USB::getExitSlitPosition(asynUser* pasynUser, epicsInt32 *value)
+{
+    asynStatus status = asynSuccess;
+    if (isMovableSlit(pasynUser, FrontExitSlit))
+        *value = ARC_get_Mono_Slit_Width(FrontExitSlit, pasynUser);
+    else if (isMovableSlit(pasynUser, SideExitSlit))
+        *value = ARC_get_Mono_Slit_Width(SideExitSlit, pasynUser);
+    else
+        status = asynDisabled;
+    return status;
+}
+
+asynStatus ARC_USB::getEntrySlitPosition(asynUser* pasynUser, epicsInt32 *value)
+{
+    asynStatus status = asynSuccess;
+    if (isMovableSlit(pasynUser, SideEntanceSlit))
+        *value = ARC_get_Mono_Slit_Width(SideEntanceSlit, pasynUser);
+    else if (isMovableSlit(pasynUser, SideEntanceSlit))
+        *value = ARC_get_Mono_Slit_Width(FrontEntranceSlit, pasynUser);
+    else
+        status = asynDisabled;
     return status;
 }
 
@@ -349,9 +390,7 @@ asynStatus ARC_USB::readInt32(asynUser *pasynUser, epicsInt32 *value)
     int function = pasynUser->reason;
     if (function == m_GratingPV)
     {
-        int Grating = ARC_get_Mono_Grating(pasynUser) - 1;
-        int gratingLines = m_gratings[Grating];
-        *value = gratingLines;
+        *value = getgratingLines(pasynUser);
     }
     else if (function == m_TurretPV)
     {
@@ -359,31 +398,31 @@ asynStatus ARC_USB::readInt32(asynUser *pasynUser, epicsInt32 *value)
     }
     else if (function == m_MirrorPV)
     {
-        EMirrorPosition MirrorPosition;
-        long mirror = 2;	// 2 means "exit mirror"
-        long position = ARC_get_Mono_Diverter_Pos(pasynUser, mirror);	// 3 means "front exit slit"
-        status = asynSuccess;
-        switch (position) {
-        case 3: MirrorPosition = mpFront; break;
-        case 4: MirrorPosition = mpSide; break;
-        default: _ASSERT(false);
-            throw new ARC_USB::Exception("unable to read mirrorPos", __FUNCTION__, __LINE__);
-        }
-        *value = MirrorPosition;
+        *value = getMirrorPosition(pasynUser);
     }
     else if (function == m_ExitSlitWidthPV)
     {
-        if (isMovableSlit(pasynUser, FrontExitSlit))
-            *value = ARC_get_Mono_Slit_Width(FrontExitSlit, pasynUser);
-        else
-            *value = ARC_get_Mono_Slit_Width(SideExitSlit, pasynUser);
+        status = getExitSlitPosition(pasynUser, value);
     }
     else if (function == m_EntrySlitWidthPV)
     {
-        if (isMovableSlit(pasynUser, SideEntanceSlit))
-            *value = ARC_get_Mono_Slit_Width(SideEntanceSlit, pasynUser);
-        else
-            *value = ARC_get_Mono_Slit_Width(FrontEntranceSlit, pasynUser);
+        status = getEntrySlitPosition(pasynUser, value);
+    }
+    else if (function == m_MovingPV)
+    {
+        double Wavelength_nm = 0;
+        bool done = ARC_Mono_Scan_Done(pasynUser, Wavelength_nm);
+        *value = done ? 0 : 1;
+        setDoubleParam(m_WavelengthPV, Wavelength_nm);
+        setDoubleParam(m_ScanRatePV, ARC_get_Mono_Init_ScanRate_nm(pasynUser));
+        setIntegerParam(m_GratingPV, getgratingLines(pasynUser));
+        setIntegerParam(m_MirrorPV, getMirrorPosition(pasynUser));
+        epicsInt32 SlitPosition;
+        if (getExitSlitPosition(pasynUser, &SlitPosition)==asynSuccess)
+            setIntegerParam(m_ExitSlitWidthPV, SlitPosition);
+        if (getEntrySlitPosition(pasynUser, &SlitPosition)==asynSuccess)
+            setIntegerParam(m_ExitSlitWidthPV, SlitPosition);
+        callParamCallbacks();
     }
     else
         status = asynPortDriver::readInt32(pasynUser, value);
@@ -468,7 +507,6 @@ asynStatus ARC_USB::writeFloat64(asynUser *pasynUser, epicsFloat64 value)
     int function = pasynUser->reason;
     if (function == m_WavelengthPV)
     {
-        setisMoving(true);
         ARC_set_Mono_Wavelength_nm(pasynUser, value);
     }
     else if (function == m_ScanRatePV)
@@ -508,6 +546,7 @@ asynStatus ARC_USB::readEnum(asynUser *pasynUser, char *strings[], int values[],
             snprintf(enumString, sizeof(enumString) - 1, "%d", m_gratings[grating]);
             strings[grating] = _strdup(enumString);
             values[grating] = m_gratings[grating];
+            severities[grating] = 0;
         }
     }
     else if (function == m_MirrorPV)
@@ -521,6 +560,7 @@ asynStatus ARC_USB::readEnum(asynUser *pasynUser, char *strings[], int values[],
                     free(strings[*nIn]);
                 strings[*nIn] = _strdup(ARC_get_Mono_Diverter_Pos_CharStr(pasynUser, Mirror_Pos).c_str());
                 values[*nIn] = Mirror_Pos;
+                severities[*nIn] = 0;
                 *nIn++;
             }
         }
@@ -530,21 +570,14 @@ asynStatus ARC_USB::readEnum(asynUser *pasynUser, char *strings[], int values[],
         *nIn = 2;
         strings[0] = _strdup("Stationary");
         values[0] = 0;
+        severities[0] = 0;
         strings[1] = _strdup("Moving");
         values[1] = 1;
+        severities[1] = 0;
     }
     else
         status = asynPortDriver::readEnum(pasynUser, strings, values, severities, nElements, nIn);
     return status;
-}
-
-void ARC_USB::setisMoving(bool isMoving)
-{
-    if (m_isMoving == isMoving)
-        return;
-    m_isMoving = isMoving;
-    setIntegerParam(m_MovingPV, isMoving ? 1 : 0);
-    callParamCallbacks(0, m_MovingPV);
 }
 
 bool ARC_USB::isMovableSlit(asynUser* pasynUser, long Slit_Pos) const
@@ -561,8 +594,7 @@ bool ARC_USB::isMovableSlit(asynUser* pasynUser, long Slit_Pos) const
 
 bool ARC_USB::isMovableMirror(asynUser* pasynUser, long Mirror_Pos) const
 {
-    bool isMovableMirror = false;
-    ARC_get_Mono_Diverter_Valid(pasynUser, Mirror_Pos);
+    bool isMovableMirror = ARC_get_Mono_Diverter_Valid(pasynUser, Mirror_Pos);
     return isMovableMirror;
 }
 
@@ -766,7 +798,7 @@ bool ARC_USB::ARC_Mono_Scan_Done(asynUser* pasynUser, double& WaveLength_nm) con
     if (!::ARC_Mono_Scan_Done(m_Handle, &Done_Moving, &WaveLength_nm, &Error_Code))
     {
         asynPrint(pasynUser, ASYN_TRACE_ERROR, "%s\n", Exception::GetDetails(Error_Code, __FUNCTION__, __LINE__).c_str());
-        return isMoving();
+        return true;
     }
 #else
     long Done_MovingL = 1;
@@ -774,7 +806,7 @@ bool ARC_USB::ARC_Mono_Scan_Done(asynUser* pasynUser, double& WaveLength_nm) con
         //    if (!::ARC_Mono_Scan_Done(m_Handle, Done_MovingL, WaveLength_nm)) *This function throws an access violation*
     {
         asynPrint(pasynUser, ASYN_TRACE_ERROR, "Could not get wavelength\n");
-        return isMoving();
+        return true;
     }
     Done_Moving = (Done_MovingL != 0);
 #endif

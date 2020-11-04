@@ -3,8 +3,6 @@ record (ao, "$(P)Wavelength") {
     field (DESC, "Set wavelength")
     field (EGU, "nm")
     field (OUT,  "@asyn($(PORT),$(ADDR),1)WAVELENGTH")
-    field (SCAN, "5 second")
-    field (PINI, "YES")
     info  ("asyn:READBACK", "1")
 }
 
@@ -17,14 +15,14 @@ record (ao, "$(P)ScanRate") {
 }
 
 record (ao, "$(P)ExitSlitWidth") {
-    field (DTYP, "asynFloat64")
+    field (DTYP, "asynInt32")
     field (DESC, "Exit slit width")
     field (OUT,  "@asyn($(PORT),$(ADDR),1)EXITSLITWIDTH")
     info  ("asyn:READBACK", "1")
 }
 
 record (ao, "$(P)EntrySlitWidth") {
-    field (DTYP, "asynFloat64")
+    field (DTYP, "asynInt32")
     field (DESC, "Entry slit width")
     field (OUT,  "@asyn($(PORT),$(ADDR),1)ENTRYSLITWIDTH")
     info  ("asyn:READBACK", "1")
@@ -49,6 +47,7 @@ record (mbbo, "$(P)Grating") {
     field (DESC, "Grating of Spectrometer")
     field (OUT,  "@asyn($(PORT),$(ADDR),1)GRATING")
     info("asyn:READBACK", "1")
+    field (PINI, "YES")
 }
 
 record (longin, "$(P)Turret") {
@@ -68,5 +67,5 @@ record (bi, "$(P)Moving") {
     field (DTYP, "asynInt32")
     field (DESC, "Spectrometer is moving")
     field (INP,  "@asyn($(PORT),$(ADDR),1)MOVING")
-    field (SCAN, "I/O Intr")
+    field (SCAN, "5 second")
 }
