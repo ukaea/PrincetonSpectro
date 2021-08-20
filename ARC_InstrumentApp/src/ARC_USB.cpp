@@ -216,12 +216,18 @@ asynStatus ARC_USB::connect(asynUser* pasynUser)
     // Search devices
     long Total = ARC_Search_For_Inst(pasynUser);
     if (Total == 0)
-        ThrowException(pasynUser, "no devices found", __FUNCTION__, __LINE__);
+    {
+        asynPrint(pasynUser, ASYN_TRACE_ERROR, "no devices found\n");
+        return asynError;
+    }
     asynPrint(pasynUser, ASYN_TRACEIO_DEVICE, "%d devices found\n", Total);
     if (m_MonoSerial == 0)
     {
         if (Total > 1)
-            ThrowException(pasynUser, "More than one device found", __FUNCTION__, __LINE__);
+        {
+            asynPrint(pasynUser, ASYN_TRACE_ERROR, "More than one device found\n");
+            return asynError;
+        }
         // Assuming only one device attached, so we directly open the first
         // one, that has therefore code ID 0.
         if (ARC_Open_Mono(pasynUser, 0))
@@ -719,7 +725,7 @@ long ARC_USB::ARC_Search_For_Inst(asynUser* pasynUser) const
 #else
     if (!::ARC_Search_For_Inst(total))
 #endif
-        ThrowException(pasynUser, "failed to search for devices", __FUNCTION__, __LINE__);
+        asynPrint(pasynUser, ASYN_TRACE_ERROR, "failed to search for devices\n");
     return total;
 }
 
