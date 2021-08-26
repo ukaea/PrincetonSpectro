@@ -1,5 +1,17 @@
-/* IsoPlaneMain.cpp */
-/* Author:  Peter Heesterman */
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+//																									//
+//	Module:																							//
+//		ARC_InstrumentMain.cpp																		//
+//																									//
+//	Description:																					//
+//		IOC Application startup.																	//
+//																									//
+//	Author:  Peter Heesterman (Tessella plc). Date: 26 Aug 2021.									//
+//																									//
+//	ARC_InstrumentApp is distributed subject to a Software License Agreement						//
+//	found in file LICENSE that is included with this distribution.									//
+//																									//
+//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include <stddef.h>
 #include <stdlib.h>

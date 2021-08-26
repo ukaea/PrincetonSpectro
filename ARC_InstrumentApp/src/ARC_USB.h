@@ -1,8 +1,19 @@
-/*
- * ARCMonochromator.h		v0.04 (2006 07 19)
- *
- * ARCMonochromator derived class
- */
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+//																									//
+//	Module:																							//
+//		ARC_USB.h																					//
+//																									//
+//	Description:																					//
+//		Declares the ARC_USB class.																	//
+//		This uses AsynPortDriver and asynOctetSyncIO to control an Acton spectrometer.				//
+// 		See, for example, https://www.princetoninstruments.com/products/acton-ls-family/acton-ls	//
+//																									//
+//	Author:  Peter Heesterman (Tessella plc). Date: 26 Aug 2021.									//
+//																									//
+//	ARC_InstrumentApp is distributed subject to a Software License Agreement						//
+//	found in file LICENSE that is included with this distribution.									//
+//																									//
+//////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
 const static int ARC_NULL_HANDLE = -1;
