@@ -8,8 +8,8 @@ include $(TOP)/configure/CONFIG
 #=============================
 # Build the IOC application
 
-LIBRARY_IOC = ARC_InstrumentDev
-PROD_IOC = ARC_InstrumentApp
+LIBRARY_IOC_WIN32 = ARC_InstrumentDev
+PROD_IOC_WIN32 = ARC_InstrumentApp
 
 # ARC_Instrument.dbd will be created and installed
 DBD += ARC_Instrument.dbd
