@@ -29,7 +29,6 @@
 #include <epicsExit.h>
 #include <asynDriver.h>
 
-#define epicsExportSharedSymbols
 #include <epicsExport.h>
 #include "ARC_USB.h"
 

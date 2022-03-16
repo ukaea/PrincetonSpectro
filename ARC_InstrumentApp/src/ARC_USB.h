@@ -18,7 +18,18 @@
 
 const static int ARC_NULL_HANDLE = -1;
 
+#ifdef epicsExportSharedSymbols
+#define ARC_USBepicsExportSharedSymbols
+#undef epicsExportSharedSymbols
+#endif
+
 #include <asynPortDriver.h>
+
+#ifdef ARC_USBepicsExportSharedSymbols
+#define epicsExportSharedSymbols
+#undef ARC_USBepicsExportSharedSymbols
+#endif
+#include <sharelib.h>
 
 #include <string>
 #include <mutex>
@@ -26,9 +37,6 @@ const static int ARC_NULL_HANDLE = -1;
 ////////////////////////////////////////////////////////////
 //
 // Class declaration : ARC_USB
-//
-// Date : 2006
-// Author: Klaus Kneupner 
 //
 // Description : Drive an ARC through USB.
 //				 Original implementation by Francesco Orsegana (?)
