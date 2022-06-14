@@ -20,11 +20,12 @@ IsoPlane_DBD += base.dbd
 # Include dbd files from all support applications:
 IsoPlane_DBD += asyn.dbd
 IsoPlane_DBD += drvAsynSerialPort.dbd
+IsoPlane_DBD += calc.dbd
 IsoPlane_DBD += $(STREAM)/dbd/stream.dbd
 
 # Add all the support libraries needed by this IOC
 # IsoPlaneDev_LIBS += stream asyn
-IsoPlaneApp_LIBS += stream asyn
+IsoPlaneApp_LIBS += stream asyn calc
 
 # IsoPlane_registerRecordDeviceDriver.cpp derives from IsoPlaneDev.dbd
 IsoPlaneApp_SRCS += IsoPlane_registerRecordDeviceDriver.cpp

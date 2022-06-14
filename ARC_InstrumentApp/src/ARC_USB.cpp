@@ -15,14 +15,18 @@
 //																									//
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 
+#ifdef _MSC_VER
 #pragma warning(disable:4250)
+#pragma warning(disable:4996)
+#endif
 
 #include <vector>
+#include <string.h>
 
 #ifdef _M_X64
-#include "..\Acton\ARC_Instrument_x64.h"
+#include "../Acton/ARC_Instrument_x64.h"
 #else
-#include "..\Acton\ARC_Instrument_dll.h"
+#include "../Acton/ARC_Instrument_dll.h"
 #endif
 
 #include <iocsh.h>
@@ -477,7 +481,7 @@ asynStatus ARC_USB::writeInt32(asynUser *pasynUser, epicsInt32 value)
         switch (value) {
         case mpFront: position = 3; break;
         case mpSide: position = 4; break;
-        default: _ASSERT(false);
+        default: assert(false);
         }
         ARC_set_Mono_Diverter_Pos(pasynUser, mirror, value);
     }
@@ -555,7 +559,7 @@ asynStatus ARC_USB::readEnum(asynUser *pasynUser, char *strings[], int values[],
             if (strings[grating])
                 free(strings[grating]);
             snprintf(enumString, sizeof(enumString) - 1, "%d", m_gratings[grating]);
-            strings[grating] = _strdup(enumString);
+            strings[grating] = strdup(enumString);
             values[grating] = m_gratings[grating];
             severities[grating] = 0;
         }
@@ -569,7 +573,7 @@ asynStatus ARC_USB::readEnum(asynUser *pasynUser, char *strings[], int values[],
             {
                 if (strings[*nIn])
                     free(strings[*nIn]);
-                strings[*nIn] = _strdup(ARC_get_Mono_Diverter_Pos_CharStr(pasynUser, Mirror_Pos).c_str());
+                strings[*nIn] = strdup(ARC_get_Mono_Diverter_Pos_CharStr(pasynUser, Mirror_Pos).c_str());
                 values[*nIn] = Mirror_Pos;
                 severities[*nIn] = 0;
                 *nIn++;
@@ -579,10 +583,10 @@ asynStatus ARC_USB::readEnum(asynUser *pasynUser, char *strings[], int values[],
     else if (function == m_MovingPV)
     {
         *nIn = 2;
-        strings[0] = _strdup("Stationary");
+        strings[0] = strdup("Stationary");
         values[0] = 0;
         severities[0] = 0;
-        strings[1] = _strdup("Moving");
+        strings[1] = strdup("Moving");
         values[1] = 1;
         severities[1] = 0;
     }

@@ -29,7 +29,7 @@ const static int ARC_NULL_HANDLE = -1;
 #define epicsExportSharedSymbols
 #undef ARC_USBepicsExportSharedSymbols
 #endif
-#include <sharelib.h>
+#include <shareLib.h>
 
 #include <string>
 #include <mutex>
