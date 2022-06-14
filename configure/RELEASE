@@ -22,13 +22,19 @@
 TEMPLATE_TOP=$(EPICS_BASE)/templates/makeBaseApp/top
 
 # If using the sequencer, point SNCSEQ at its top directory:
-#SNCSEQ=$(EPICS_BASE)/../modules/soft/seq
-ASYN=\epics/support/asyn
-STREAM=\epics/support/stream
+MODULES=/builds/DATAnet/princetonspectro/.cache
+ASYN=$(MODULES)/asyn-R4-41
+STREAM=$(MODULES)/stream-2.8.22
 
 # EPICS_BASE usually appears last so other apps can override stuff:
-EPICS_BASE=\epics/base
+EPICS_BASE=/builds/DATAnet/princetonspectro/.cache/base-R7.0.3.1
 
 # Set RULES here if you want to take build rules from somewhere
 # other than EPICS_BASE:
 #RULES=/path/to/epics/support/module/rules/x-y
+
+# These lines allow developers to override these RELEASE settings
+# without having to modify this file directly.
+-include $(TOP)/../RELEASE.local
+-include $(TOP)/../RELEASE.$(EPICS_HOST_ARCH).local
+-include $(TOP)/configure/RELEASE.local
