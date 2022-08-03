@@ -90,13 +90,13 @@ wine32_default:
   variables:
     WINE: "32"
 
-#wine64_default:
-#  extends: .build
-#  variables:
-#    WINE: "64"
+wine64_default:
+  extends: .build
+  variables:
+    WINE: "64"
 
-#wine64_debug:
-#  extends: .build
-#  variables:
-#    WINE: "64"
-#    BCFG: "debug"
+wine64_debug:
+  extends: .build
+  variables:
+    WINE: "64"
+    BCFG: "debug"
