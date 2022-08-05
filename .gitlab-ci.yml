@@ -100,3 +100,10 @@ wine64_debug:
   variables:
     WINE: "64"
     BCFG: "debug"
+    
+wine64_static:
+  extends: .build
+  variables:
+    WINE: "64"
+    BCFG: "static"
+
