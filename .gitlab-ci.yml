@@ -67,22 +67,22 @@ gcc_default:
   extends: .build
   variables:
 
-#gcc_static:
-#  extends: .build
-#  variables:
-#    BCFG: "static"
+gcc_static:
+  extends: .build
+  variables:
+    BCFG: "static"
 
 clang_default:
   extends: .build
   variables:
     CMP: "clang"
 
-#clang_static_c++11:
-#  extends: .build
-#  variables:
-#    CMP: "clang"
-#    BCFG: "static"
-#    EXTRA: "CMD_CXXFLAGS=-std=c++11"
+clang_static_c++11:
+  extends: .build
+  variables:
+    CMP: "clang"
+    BCFG: "static"
+    EXTRA: "CMD_CXXFLAGS=-std=c++11"
 
 # Cross-compilations to Windows using gcc/MinGW and WINE
 wine32_default:
