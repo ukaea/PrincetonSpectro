@@ -13,6 +13,7 @@ set -e
 
 # These files are created by the NDS build, wheras Linux builds install to a system folder.
 if [ "$WINE" == "64" ]; then
+    ls /usr/lib/gcc/x86_64-w64-mingw32
     # see https://github.com/randombit/botan/issues/2039
     if [ ! -f /usr/bin/x86_64-w64-mingw32-g++-win32 ]; then
         apt-get install -y g++-mingw-w64-x86-64
