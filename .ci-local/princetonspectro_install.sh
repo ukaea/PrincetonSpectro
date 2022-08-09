@@ -25,8 +25,8 @@ export WINE=64
 export VV=1
 export CLEAN_DEPS="NO"
 source ./ci-scripts/hooks.sh > /tmp/princetonspectro_install.log
-echo "PREPARE" > /tmp/princetonspectro_install.log
-python .ci/cue.py prepare > /tmp/princetonspectro_install.log 2>&1
-echo "BUILD" > /tmp/princetonspectro_install.log
-python .ci/cue.py build > /tmp/princetonspectro_install.log 2>&1
+echo "PREPARE" >> /tmp/princetonspectro_install.log
+python .ci/cue.py prepare >> /tmp/princetonspectro_install.log 2>&1
+echo "BUILD" >> /tmp/princetonspectro_install.log
+python .ci/cue.py build >> /tmp/princetonspectro_install.log 2>&1
 
