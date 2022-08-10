@@ -36,6 +36,7 @@ variables:
     - python .ci/cue.py prepare
   script:
     - python .ci/cue.py build
+    - .ci-local/hooks.sh
     - python .ci/cue.py test
     - python .ci/cue.py test-results
 
