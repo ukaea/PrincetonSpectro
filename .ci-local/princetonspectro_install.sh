@@ -18,13 +18,12 @@ export GITLAB_CI=1
 export SETUP_PATH=".ci-local:.ci"
 export BASE_RECURSIVE="YES"
 export CMP="gcc"
-export BGFC="static"
+export BCFG="static"
 export SET="stable"
 export CLEAN_DEPS="NO"
 export WINE=64
 export VV=1
-export CLEAN_DEPS="NO"
-source ./ci-scripts/hooks.sh > /tmp/princetonspectro_install.log
+source .ci-local/hooks.sh > /tmp/princetonspectro_install.log
 echo "PREPARE" >> /tmp/princetonspectro_install.log
 python .ci/cue.py prepare >> /tmp/princetonspectro_install.log 2>&1
 echo "BUILD" >> /tmp/princetonspectro_install.log

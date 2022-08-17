@@ -18,8 +18,7 @@ if [ "$WINE" == "64" ]; then
         apt-get install -y g++-mingw-w64-x86-64
     fi
     update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix
-    # ls /usr/lib/gcc/x86_64-w64-mingw32
-    find /usr -name '*mingw*'
+    # find /usr -name '*mingw*'
 elif [ "$WINE" == "32" ]; then
     if [ ! -f /usr/bin/i686-w64-mingw32-g++-win32 ]; then
         apt-get install -y g++-mingw-w64-i686
