@@ -1,7 +1,6 @@
-MODULES=sscan calc asyn stream
+MODULES=calc asyn stream
 
 BASE=R7.0.6.1
-SSCAN=R2-11-5
 CALC=R3-7-4
 ASYN=R4-41
 STREAM=2.8.22
